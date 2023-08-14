@@ -4,6 +4,7 @@
 @import url("./structure.css");
 @import url("./style.css");
 @import url("./media.css");
+@import url("grid.css");
 
 html {
   color: var(--foreground-color);
@@ -20,7 +21,8 @@ body.index {
   margin-top: 0;
   box-sizing: border-box;
   font-size: 16px;
-  max-width: 52em;
+  width: 100%;
+  /* max-width: 52em; */
   color: var(--foreground-color);
   background-color: var(--background-color);
 }
@@ -94,4 +96,9 @@ summary {
 
 footer {
    margin-top: 1rem;
+}
+
+.supplemental-icon {
+   /* max width 10% of the container it is in, or 50 pixel, whatever is smaller */
+    max-width: max(10%, 50px);
 }
