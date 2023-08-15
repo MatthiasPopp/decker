@@ -96,7 +96,7 @@ async function extractPresentations() {
                             const iconElement = presentationDoc.querySelector('link[rel="shortcut icon"]');
                             // misuse the affiliationLogo to store the icon
                             presentationInfo.affiliationLogo = iconElement ? iconElement.getAttribute('href') : '';
-                            presentation.info.supplemental.push( presentationInfo );
+                            presentation.info.supplemental.push(presentationInfo);
                             found = true;
                             break;
                         }
@@ -130,21 +130,82 @@ async function extractPresentations() {
     return presentations;
 }
 
-   
+
+function createChapterFilterButtons() {
+    // Search for the chapte-title elements and create a button for each of them
+    const chapterTitles = document.querySelectorAll('.chapter-title');
+    // Get the filter-column element where te subelement with the class card-title that is a header and has "Chapter" as  text content
+
+    const filterColumn = document.querySelectorAll('.filter-column .card-title');
+
+    let chapterTile = null;
+
+    for (const title of filterColumn) {
+        if (title.textContent === 'Chapter') {
+            chapterTile = title;
+            break;
+        }
+    }
+
+    if (!chapterTile) {
+        return;
+    }
+
+    // Create a grid element to hold the buttons
+    const grid = document.createElement('div');
+    grid.classList.add('grid');
+    chapterTile.parentElement.appendChild(grid);
+    // Create a button for each chapter title
+    for (const chapterTitle of chapterTitles) {
+        const button = document.createElement('button');
+        button.classList.add('button', 'js-button-filter', 'chapter-button');
+        button.setAttribute('data-category', chapterTitle.textContent);
+        button.textContent = chapterTitle.textContent;
+        grid.appendChild(button);
+    }
+}
+
+
+function createTagFilterButtons() {
+    // Get all keyword-elements and create a button for each of them
+    const keywordElements = document.querySelectorAll('.keyword');
+    // Create a grid element to hold the buttons
+    const grid = document.createElement('div');
+    grid.classList.add('grid');
+    // Get the filter-column element where te subelement with the class card-title has the value "Tags"
+    const filterColumn = document.querySelectorAll('.filter-column .card-title');
+
+    let tagTile = null;
+
+    for (const title of filterColumn) {
+        if (title.textContent === 'Tags') {
+            tagTile = title;
+            break;
+        }
+    }
+
+    if (!tagTile) {
+        return;
+    }
+
+    tagTile.parentElement.appendChild(grid);
+
+    // Create a button for each keyword
+    for (const keywordElement of keywordElements) {
+        const button = document.createElement('button');
+        button.classList.add('button', 'js-button-filter', 'keyword-button');
+        button.setAttribute('data-category', keywordElement.textContent);
+        button.textContent = keywordElement.textContent;
+        grid.appendChild(button);
+    }
+
+}
+
+
+
 
 function removeExcludedDirectories(prefix, sections) {
-// In the header there is an optional list of directories to exclude from the index.
-//    $if(index.exclude-dirs)$
-//   <!-- Exclude directories from search index -->
-//   <!-- The exclude dirs is a list of directories. Create a ul with li elements -->
-//   <ul id="search-exclude-dirs" style="display: none;">
-//     $for(index.exclude-dirs)$
-//     <li>$index.exclude-dirs$</li>
-//     $endfor$
-//   </ul>
-//   $endif$
-//
-// This function removes presentations that are in one of the excluded directories.
+    // This function removes presentations that are in one of the excluded directories.
 
     const excludeDirs = document.getElementById('search-exclude-dirs');
     if (!excludeDirs) {
@@ -154,25 +215,25 @@ function removeExcludedDirectories(prefix, sections) {
     const excludedDirs = Array.from(excludeDirs.children).map(li => li.textContent.trim());
 
     //debug
-    console.log('Checking for excluded directories: ' + excludedDirs.join(', '));
+    // console.log('Checking for excluded directories: ' + excludedDirs.join(', '));
 
     // Remove excluded directories from the presentations array
     for (let i = sections.length - 1; i >= 0; i--) {
         const section = sections[i];
 
         for (let j = section.sectionPresentations.length - 1; j >= 0; j--) {
-            console.log('Checking ' + section.sectionPresentations[j].url);
+            // console.log('Checking ' + section.sectionPresentations[j].url);
             const presentation = section.sectionPresentations[j];
             if (excludedDirs.some(excludedDir => presentation.url.startsWith(prefix + excludedDir))) {
                 section.sectionPresentations.splice(j, 1);
-                console.log('Removing ' + presentation.url);
-            }else
-            {
-                console.log('Keeping ' + presentation.url);
+                // console.log('Removing ' + presentation.url);
+            } else {
+                // console.log('Keeping ' + presentation.url);
             }
         }
 
     }
+
 }
 
 function removeEmptySections(presentations) {
@@ -217,6 +278,7 @@ async function populateTiles() {
             </div>
           </a>
         `;
+
             // add a div using css flex flow to add handout and supplemental links
             const cardLinks = document.createElement('div');
             cardLinks.classList.add('card-links');
@@ -247,7 +309,7 @@ async function populateTiles() {
             // add supplemental link if available as an icon
             if (presentation.info.supplemental) {
                 for (const supplemental of presentation.info.supplemental) {
-                    
+
                     const supplementalLink = document.createElement('a');
                     supplementalLink.href = supplemental.url;
                     supplementalLink.target = '_blank';
@@ -286,7 +348,11 @@ async function populateTiles() {
                     keywordContainer.appendChild(keywordElement);
                 });
                 card.appendChild(keywordContainer);
+                card.setAttribute('data-keywords', keywords.join(' '));
             }
+
+            card.setAttribute('data-category', presentation.info.chapter);
+
 
             // check if the previously added card has a different chapter than the current one
             // if so add a new div with the chapter title that spans the entire width of the container
@@ -302,6 +368,11 @@ async function populateTiles() {
         });
 
     });
+
+    //Hacky way to add the filter buttons. Need to get the async/await to work
+    createChapterFilterButtons();
+    createTagFilterButtons();
+    addFilters();
 }
 
 /**
@@ -319,15 +390,15 @@ function removeDefaultLayout() {
 
 
 // Function to add filters (modify according to your data)
-function addFilters() {
-    // Get filter elements, e.g., search input and checkboxes
-    const searchInput = document.getElementById('searchInput');
-    const checkbox = document.getElementById('checkbox');
+// function addFilters() {
+//     // Get filter elements, e.g., search input and checkboxes
+//     const searchInput = document.getElementById('searchInput');
+//     const checkbox = document.getElementById('checkbox');
 
-    // Add event listeners to filters
-    searchInput.addEventListener('input', filterTiles);
-    checkbox.addEventListener('change', filterTiles);
-}
+//     // Add event listeners to filters
+//     searchInput.addEventListener('input', filterTiles);
+//     checkbox.addEventListener('change', filterTiles);
+// }
 
 // Function to filter tiles based on search input and checkboxes
 function filterTiles() {
@@ -338,54 +409,163 @@ function filterTiles() {
 
 
 
+// // Function to filter tiles based on search input (modify as needed)
+// function filterTiles() {
+//     $(document).ready(function () {
+
+//         let $grid = $('.grid');
+//         let $items = $grid.children('.card');
+//         let currentCat = 'all';
+//         let sidebar = [];
+//         let sortItems = (a, b) => {
+//             let an = a.getAttribute('data-order');
+//             let bn = b.getAttribute('data-order');
+
+//             if (an > bn) { return 1; }
+//             if (an < bn) { return -1; }
+//             return 0;
+//         }
+
+//         let filterItems = function () {
+//             let cat = this.getAttribute('data-category');
+//             let newSidebar = [];
+
+//             $('.button--is-active').toggleClass('button--is-active');
+//             $(`.button[data-category=${cat}]`).toggleClass('button--is-active');
+
+//             $grid.fadeOut("slow", function () {
+
+//                 sidebar.map((item) => $(item).appendTo($grid));
+
+//                 if (cat === 'all') {
+//                     $items.sort(sortItems).detach().appendTo($grid);
+//                 } else {
+//                     $(`.card:not([data-category=${cat}])`).each(function () {
+//                         newSidebar.push($(this).detach());
+//                     });
+//                 }
+//                 sidebar = newSidebar;
+//                 currentCat = cat;
+//             }).fadeIn("slow");
+//         };
+
+//         // Handle the click on a category filter button
+//         $('.js-button-filter').click(filterItems);
+
+
+
+//     });
+// }
+
+
+
+
 // Function to filter tiles based on search input (modify as needed)
 function filterTiles() {
-    $(document).ready(function () {
+    const keyword = this.getAttribute('data-category');
 
-        let $grid = $('.grid');
-        let $items = $grid.children('.card');
-        let currentCat = 'all';
-        let sidebar = [];
-        let sortItems = (a, b) => {
-            let an = a.getAttribute('data-order');
-            let bn = b.getAttribute('data-order');
+    // Hide all cards
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+        card.style.display = 'none';
+    });
 
-            if (an > bn) { return 1; }
-            if (an < bn) { return -1; }
-            return 0;
-        }
-
-        let filterItems = function () {
-            let cat = this.getAttribute('data-category');
-            let newSidebar = [];
-
-            $('.button--is-active').toggleClass('button--is-active');
-            $(`.button[data-category=${cat}]`).toggleClass('button--is-active');
-
-            $grid.fadeOut("slow", function () {
-
-                sidebar.map((item) => $(item).appendTo($grid));
-
-                if (cat === 'all') {
-                    $items.sort(sortItems).detach().appendTo($grid);
-                } else {
-                    $(`.card:not([data-category=${cat}])`).each(function () {
-                        newSidebar.push($(this).detach());
-                    });
-                }
-                sidebar = newSidebar;
-                currentCat = cat;
-            }).fadeIn("slow");
-        };
-
-        // Handle the click on a category filter button
-        $('.js-button-filter').click(filterItems);
-
-
-
+    // Show cards that match the selected keyword
+    const filteredCards = document.querySelectorAll(`.card[data-category="${keyword}"]`);
+    filteredCards.forEach(card => {
+        card.style.display = 'block';
     });
 }
 
+// Attach the filterTiles function to the filter buttons
+
+function addFilters() {
+
+    // Get all chapter buttons and add event listeners
+    const filterButtons = document.querySelectorAll('.js-button-filter.chapter-button');
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            // Toggle the active class
+            this.classList.toggle('button--is-active');
+
+            // Get active categories
+            const activeCategories = Array.from(filterButtons)
+                .filter(button => button.classList.contains('button--is-active'))
+                .map(button => button.getAttribute('data-category'));
+
+            //if no category is active, show all cards
+            if (activeCategories.length === 0) {
+                const cards = document.querySelectorAll('.card:not(.filter-column)');
+                cards.forEach(card => {
+                    card.style.display = 'block';
+                });
+                return;
+            }
+            
+
+            // Filter cards based on active categories 
+            // Igonore cards that have filter-column as class to avoid filtering the filter buttons
+
+            const cards = document.querySelectorAll('.card:not(.filter-column)');
+
+            cards.forEach(card => {
+                const cardCategory = card.getAttribute('data-category');
+                if (activeCategories.includes(cardCategory)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Get all keyword buttons and add event listeners
+    const keywordButtons = document.querySelectorAll('.js-button-filter.keyword-button');
+    keywordButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            // Toggle the active class
+            this.classList.toggle('button--is-active');
+
+            // Get active keywords
+            const activeKeywords = Array.from(keywordButtons)
+                .filter(button => button.classList.contains('button--is-active'))
+                .map(button => button.getAttribute('data-category'));
+
+            //if no keyword is active, show all cards
+            if (activeKeywords.length === 0) {
+                const cards = document.querySelectorAll('.card:not(.filter-column)');
+                cards.forEach(card => {
+                    card.style.display = 'block';
+                });
+                return;
+            }
+
+            // Filter cards based on active keywords
+            // Igonore cards that have filter-column as class to avoid filtering the filter buttons
+            const cards = document.querySelectorAll('.card:not(.filter-column)');
+            cards.forEach(card => {
+                const cardKeywords = card.getAttribute('data-keywords');
+
+                // If the card has no keywords, it should be filtered out if any keyword is active  
+                if (!cardKeywords) {
+                    if (activeKeywords.length > 0) {
+                        card.style.display = 'none';
+                    } else {
+                        card.style.display = 'block';
+                    }
+                    return; // continue with next card
+                }
+
+                if (activeKeywords.some(keyword => cardKeywords.includes(keyword))) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            }
+            );
+        });
+    });
 
 
 
+}
