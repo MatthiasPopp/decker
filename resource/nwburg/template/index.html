@@ -6,9 +6,6 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
 
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
-
   <script type="module">
     /* Store JSON encoded Pandoc meta data in a global variable. */
     import initializeDecker from "./$decker-support-dir$/js/decker.js";
@@ -171,7 +168,11 @@
     </div>
     <div class="filter-column card">
       <div class="card-body">
-        <h3 class="card-title">Buzzwords</h3>
+        <h3 class="card-title">Buzzwords?</h3>
+        <div>
+            I have no idea, what to place here. Maybe some checkboxes?
+            The resonsive design would be a nightmare though ...
+        </div>
         <label>
           <input type="checkbox" value="buzzword1"> Buzzword 1
         </label>
@@ -183,29 +184,17 @@
     </div>
   </div>
 
-
-
-
   <div class="grid-container" id="tileContainer">
 
   </div>
 
-
-  <!-- Include Bootstrap JS (jQuery and Popper.js are required dependencies) -->
+  <!-- TODO: some of them are no longer required  -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+  <script src="$decker-support-dir$/js/mustache.min.js"></script>
   <script src="$decker-support-dir$/js/index-bootstap-inject.js"></script>
-
-  <script>
-    // Your existing script here
-
-    // Initial population of tiles
-    populateTiles();
-    removeDefaultLayout();
-    addFilters();
-  </script>
 
 </body>
 <footer>

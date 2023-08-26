@@ -39,6 +39,14 @@ body {
   } */
 }
 
+.grid {
+  display: flex;
+  flex-direction: initial;
+  flex-wrap: wrap;
+  gap: 3px;
+  grid-gap: 10 px;
+}
+
 
 
 .section {
