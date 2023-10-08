@@ -750,3 +750,10 @@ div.block.theorem {
    padding: 0em 0.4em;
    border-radius: 0.2em;
 }
+
+
+@media (prefers-color-scheme: dark) {
+  .sourceCode {
+    filter: invert(1);
+  }
+}

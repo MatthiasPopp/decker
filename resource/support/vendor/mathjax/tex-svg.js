@@ -1,0 +1,1 @@
+/Users/matthias/decker/third-party/MathJax/es5/tex-svg.js
