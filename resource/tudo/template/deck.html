@@ -20,9 +20,16 @@ $else$
   <title>$title$</title>
 $endif$
 $endif$
+
+  <!-- PWA stuff -->
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-touch-fullscreen" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="apple-touch-icon" href="$decker-support-dir$/pwa/icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#84b819" />
+  <link rel="manifest" href="$decker-support-dir$/pwa/manifest.webmanifest" crossorigin="use-credentials" />
+
 $if(template.favicon)$
   <link rel="shortcut icon" href="$template.favicon$">
 $endif$
@@ -63,11 +70,11 @@ $endif$
   <link rel="stylesheet" href="$decker-support-dir$/plugins/live-captioning/live-captioning.css">
   $endif$
   <link rel="stylesheet" href="$decker-support-dir$/vendor/videojs/video-js.min.css">
-  <link rel="stylesheet" href="$decker-support-dir$/vendor/css/$highlightjs$.css">
   <link rel="stylesheet" href="$decker-support-dir$/flyingFocus/flying-focus.css">
   <link rel="stylesheet" href="$decker-support-dir$/plugins/quiz-wue/quiz-wue.css">
   <link rel="stylesheet" href="$decker-support-dir$/css/deck.css">
   <link rel="stylesheet" href="$decker-support-dir$/css/tudo-deck.css">
+  <link rel="stylesheet" href="$decker-support-dir$/plugins/handout/handout.css">
   $for(template.deck.css)$
   <link rel="stylesheet" href="$template.deck.css$">
   $endfor$
@@ -86,57 +93,60 @@ $endif$
 
 $if(title)$
       <section id="$idprefix$title-slide">
-
-         <div class="background-on-accent">
-         $if(title)$
+        <div class="decker">
+          <div class="alignment">
+          <div class="background-on-accent">
+          $if(title)$
             <h1>$title$</h1>
-         $endif$
-         $if(subtitle)$
+          $endif$
+          $if(subtitle)$
             <h2>$subtitle$</h2>
-         $endif$
-         </div>
+          $endif$
+          </div>
 
-         $if(template.teaser)$
-         <img class="teaser" src=$template.teaser$>
-         $endif$
+          $if(template.teaser)$
+          <img class="teaser" src=$template.teaser$>
+          $endif$
 
-         $if(authors)$
-         <div class="authors">
-         $for(authors)$
+          $if(authors)$
+          <div class="authors">
+          $for(authors)$
             $if(it.name)$
-                <div class="author">
-                    $it.name$ 
-                    $if(it.affiliation)$
-                        <div class="affiliation"> $it.affiliation$ </div>
-                    $endif$
-                </div>
+              <div class="author">
+                $it.name$ 
+                $if(it.affiliation)$
+                  <div class="affiliation"> $it.affiliation$ </div>
+                $endif$
+              </div>
             $endif$
-         $endfor$
-         </div>
-         $endif$
+          $endfor$
+          </div>
+          $endif$
 
-         $if(author)$
-         <div class="author"> $author$ </div>
-         $endif$
+          $if(author)$
+          <div class="author"> $author$ </div>
+          $endif$
 
-         $if(affiliation)$
-         <div class="affiliation"> $affiliation$ </div>
-         $endif$
+          $if(affiliation)$
+          <div class="affiliation"> $affiliation$ </div>
+          $endif$
 
-         $if(date)$
-         <div class="date"> $date$ </div>
-         $endif$
+          $if(date)$
+          <div class="date"> $date$ </div>
+          $endif$
 
-         <img class="logo affiliation-logo light-only" src="./$decker-support-dir$/assets/tu-logo-light.svg">
-         <img class="logo affiliation-logo dark-only" src="./$decker-support-dir$/assets/tu-logo-dark.svg">
+          <img class="logo affiliation-logo light-only" src="./$decker-support-dir$/assets/tu-logo-light.svg">
+          <img class="logo affiliation-logo dark-only" src="./$decker-support-dir$/assets/tu-logo-dark.svg">
 
-         $if(template.logo)$
-         <img class="logo department-logo" src="$template.logo$">
-         $endif$
+          $if(template.logo)$
+          <img class="logo department-logo" src="$template.logo$">
+          $endif$
 
-         $if(showDeckerLink)$
-         <a class="decker-link" href="https://decker-edu.github.io/decker/">🚀 by Decker</a>
-         $endif$
+          $if(showDeckerLink)$
+          <a class="decker-link" href="https://decker-edu.github.io/decker/">🚀 by Decker</a>
+          $endif$
+          </div>
+        </div>
       </section>
 $endif$
 
@@ -152,6 +162,7 @@ $body$
   </div>
 
   <script src="$decker-support-dir$/vendor/videojs/video.min.js"></script>
+  <script src="$decker-support-dir$/vendor/chartjs/chart.umd.js"></script>
   <script type="module" src="$decker-support-dir$/components/custom-dialog.js"></script>
   <script type="module" src="./$decker-support-dir$/js/color-scheme.js"></script>
 
@@ -173,12 +184,12 @@ $body$
     import chartsPlugin from './$decker-support-dir$/plugins/charts/charts.js';
     import menuPlugin from './$decker-support-dir$/plugins/menu/menu.js';
     import feedbackPlugin from './$decker-support-dir$/plugins/feedback/feedback.js';
-    import highlightPlugin from './$decker-support-dir$/vendor/reveal/plugin/highlight/highlight.esm.js';
     import notesPlugin from './$decker-support-dir$/vendor/reveal/plugin/notes/notes.esm.js';
     $if(live-captions)$
     import captionPlugin from './$decker-support-dir$/plugins/live-captioning/live-captioning.js';
     $endif$
     import a11yPlugin from './$decker-support-dir$/plugins/a11y/a11y.js';
+    import handoutPlugin from './$decker-support-dir$/plugins/handout/handout.js';
 
     let revealConfig = { 
       // reveal configuration (see https://revealjs.com/config/)
@@ -209,12 +220,12 @@ $body$
         explainPlugin,
         menuPlugin,
         feedbackPlugin,
-        highlightPlugin,
         notesPlugin,
         $if(live-captions)$
         captionPlugin,
         $endif$
         a11yPlugin,
+        handoutPlugin
       ]
     };
 

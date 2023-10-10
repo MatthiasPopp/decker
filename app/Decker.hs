@@ -106,7 +106,7 @@ deckerRules = do
       need ["support"]
       getDeps >>= needTargets questions
   --
-  withTargetDocs "Build HTML versions of all decks, pages and handouts (*-deck.md, *-page.md)." $
+  withTargetDocs "Build HTML versions of all decks and pages (*-deck.md, *-page.md)." $
     phony "html" $ do
       need ["support", "questions"]
       getDeps >>= needTargets' [decks, pages]
@@ -165,6 +165,7 @@ deckerRules = do
       markdownToHtml htmlDeck meta getTemplate src out
       needPublicIfExists $ replaceSuffix "-deck.md" "-recording.mp4" src
       needPublicIfExists $ replaceSuffix "-deck.md" "-annot.json" src
+      needPublicIfExists $ replaceSuffix "-deck.md" "-manip.json" src
       needPublicIfExists $ replaceSuffix "-deck.md" "-times.json" src
       needPublicIfExists $ replaceSuffix "-deck.md" "-transcript.json" src
       needPublicIfExists $ replaceSuffix "-deck.md" "-recording.vtt" src
@@ -328,7 +329,7 @@ deckerRules = do
     phony "publish" $ do
       need ["support"]
       meta <- getGlobalMeta
-      getDeps >>= needTargets' [decks, handouts, pages]
+      getDeps >>= needTargets' [decks, pages]
       createPublicManifest
       let src = publicDir ++ "/"
       case lookupMeta "publish.rsync.destination" meta of
