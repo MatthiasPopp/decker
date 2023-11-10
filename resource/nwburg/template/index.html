@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="$lang$" xml:lang="$lang$"$if(dir)$ dir="$dir$"$endif$ class="light">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="$lang$" xml:lang="$lang$" $if(dir)$ dir="$dir$" $endif$ class="light">
+
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
@@ -11,26 +12,39 @@
     initializeDecker("$decker-meta-url$");
   </script>
 
-$for(author-meta)$
+
+  $for(author-meta)$
   <meta name="author" content="$author-meta$" />
-$endfor$
-$if(date-meta)$
+  $endfor$
+  $if(date-meta)$
   <meta name="dcterms.date" content="$date-meta$" />
-$endif$
-$if(keywords)$
+  $endif$
+  $if(keywords)$
   <meta name="keywords" content="$for(keywords)$$keywords$$sep$, $endfor$" />
-$endif$
-$if(description-meta)$
+  $endif$
+  $if(description-meta)$
   <meta name="description" content="$description-meta$" />
-$endif$
-$if(template.favicon)$
+  $endif$
+  $if(template.favicon)$
   <link rel="shortcut icon" href="$template.favicon$">
-$endif$
+  $endif$
   <title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
   <!-- Default Pandoc CSS for HTML documents -->
   <style>
     $styles.html()$
   </style>
+
+  $if(index.exclude-dirs)$
+  <!-- Exclude directories from search index -->
+  <!-- The exclude dirs is a list of directories. Create a ul with li elements -->
+  <ul id="search-exclude-dirs" style="display: none;">
+    $for(index.exclude-dirs)$
+    <li>$index.exclude-dirs$</li>
+    $endfor$
+  </ul>
+  $endif$
+
+
 
   <!-- Default values for CSS variables can live here. They can be overridden by
   meta data values. -->
@@ -41,92 +55,155 @@ $endif$
   <style class="css-declarations">
     @media (prefers-color-scheme: light) {
       :root {
-        $for(css-light-color-declarations)$
-          $css-light-color-declarations$
-        $endfor$
+        $for(css-light-color-declarations)$ $css-light-color-declarations$ $endfor$
       }
 
       :root.dark {
-        $for(css-dark-color-declarations)$
-          $css-dark-color-declarations$
-        $endfor$
+        $for(css-dark-color-declarations)$ $css-dark-color-declarations$ $endfor$
       }
     }
+
     @media (prefers-color-scheme: dark) {
       :root {
-        $for(css-dark-color-declarations)$
-          $css-dark-color-declarations$
-        $endfor$
+        $for(css-dark-color-declarations)$ $css-dark-color-declarations$ $endfor$
       }
 
       :root.light {
-        $for(css-light-color-declarations)$
-          $css-light-color-declarations$
-        $endfor$
+        $for(css-light-color-declarations)$ $css-light-color-declarations$ $endfor$
       }
     }
+
     :root {
-      $for(css-declarations)$
-        $css-declarations$
-      $endfor$
+      $for(css-declarations)$ $css-declarations$ $endfor$
     }
   </style>
 
   <link rel="stylesheet" href="$decker-support-dir$/css/index.css">
-$for(template.css)$
+  $for(template.css)$
   <link rel="stylesheet" href="$template.css$" />
-$endfor$
+  $endfor$
 
-$for(header-includes)$
+  $for(header-includes)$
   $header-includes$
-$endfor$
+  $endfor$
 </head>
-<body class="index"  onload="initIndexPage()">
-$for(include-before)$
-$include-before$
-$endfor$
-$if(title)$
-<header id="title-block-header">
-$if(template.index-page.banner)$
-   <div class="index-page-banner">
-      <img src=$template.index-page.banner$>
-   </div>
-$endif$
-<h1 class="title">$title$</h1>
-$if(subtitle)$
-<h2 class="subtitle">$subtitle$</h2>
-$endif$
-</header>
-$endif$
-$if(toc)$
-<nav id="$idprefix$TOC" role="doc-toc">
-$if(toc-title)$
-<h2 id="$idprefix$toc-title">$toc-title$</h2>
-$endif$
-$table-of-contents$
-</nav>
-$endif$
-$body$
-$for(include-after)$
-$include-after$
-$endfor$
+
+<body class="index" onload="initIndexPage()">
+  <div class="default-layout">
+    $for(include-before)$
+    $include-before$
+    $endfor$
+    $if(title)$
+    <header id="title-block-header">
+      $if(template.index-page.banner)$
+      <div class="index-page-banner">
+        <img src=$template.index-page.banner$>
+      </div>
+      $endif$
+      <h1 class="title">$title$</h1>
+      $if(subtitle)$
+      <h2 class="subtitle">$subtitle$</h2>
+      $endif$
+    </header>
+    $endif$
+    $if(toc)$
+    <nav id="$idprefix$TOC" role="doc-toc">
+      $if(toc-title)$
+      <h2 id="$idprefix$toc-title">$toc-title$</h2>
+      $endif$
+      $table-of-contents$
+    </nav>
+    $endif$
+    $body$
+    $for(include-after)$
+    $include-after$
+    $endfor$
+  </div>
 
   <script src="$decker-support-dir$/js/index.js"></script>
 
   <script>
     var socket = new WebSocket("ws://" + location.host + "/reload");
     socket.onmessage = function (event) {
-      if (event.data.startsWith("reload!")) 
+      if (event.data.startsWith("reload!"))
         window.location.reload(true);
     };
   </script>
+
+  <!--  -->
+
+  <!-- <div class="section tile-layout">
+    <div class="grid-container" id="filterContainer">
+
+    </div>
+  </div> -->
+
+  <div class="grid-container" id="filterContainer">
+    <div class="filter-column card">
+      <div class="card-body">
+        <h3 class="card-title">Tags</h3>
+        <label>
+          <input type="checkbox" value="tag1"> Tag 1
+        </label>
+        <label>
+          <input type="checkbox" value="tag2"> Tag 2
+        </label>
+        <!-- Add more tags as needed -->
+      </div>
+    </div>
+    <div class="filter-column card">
+      <div class="card-body">
+        <h3 class="card-title">Chapter</h3>
+        <label>
+          <input type="radio" name="chapter" value="all" checked> All
+        </label>
+        <label>
+          <input type="radio" name="chapter" value="chapter1"> Chapter 1
+        </label>
+        <label>
+          <input type="radio" name="chapter" value="chapter2"> Chapter 2
+        </label>
+        <!-- Add more chapters as needed -->
+      </div>
+    </div>
+    <div class="filter-column card">
+      <div class="card-body">
+        <h3 class="card-title">Buzzwords?</h3>
+        <div>
+            I have no idea, what to place here. Maybe some checkboxes?
+            The resonsive design would be a nightmare though ...
+        </div>
+        <label>
+          <input type="checkbox" value="buzzword1"> Buzzword 1
+        </label>
+        <label>
+          <input type="checkbox" value="buzzword2"> Buzzword 2
+        </label>
+        <!-- Add more buzzwords as needed -->
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-container" id="tileContainer">
+
+  </div>
+
+  <!-- TODO: some of them are no longer required  -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script src="$decker-support-dir$/js/mustache.min.js"></script>
+  <script src="$decker-support-dir$/js/index-bootstap-inject.js"></script>
+
 </body>
 <footer>
-   $for(author)$
-   <p class="author">$author$</p>
-   $endfor$
-   $if(date)$
-   <p class="date">$date$</p>
-   $endif$   
+  $for(author)$
+  <p class="author">$author$</p>
+  $endfor$
+  $if(date)$
+  <p class="date">$date$</p>
+  $endif$
 </footer>
+
 </html>

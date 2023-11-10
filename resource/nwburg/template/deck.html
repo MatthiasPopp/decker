@@ -121,6 +121,7 @@ $endfor$
   </script>
 
   <script src="$decker-support-dir$/vendor/videojs/video.min.js"></script>
+  <script src="$decker-support-dir$/vendor/chartjs/chart.umd.js"></script>
 </head>
 
 <body class="deck">
@@ -142,7 +143,6 @@ $body$
 
     </div>
   </div>
-
 
   <script type="module">
     // import Reveal and all plugins 
@@ -217,7 +217,7 @@ $endif$
 
     Reveal.initialize(revealConfig);
 
-    window.Reveal = Reveal;
+   window.Reveal = Reveal;
   </script>
 
 </body>
@@ -232,6 +232,20 @@ $endif$
 $for(template.js)$
   <script type="module" src="$template.js$"></script>
 $endfor$
-/* <script src="$decker-support-dir$/js/highlightjs-6502acme.js"></script> */
+
+<!--  Injection of own code for reveal's highlight.js is not as trivial as it seems. A good overview
+is found in this issue: https://github.com/hakimel/reveal.js/issues/2761
+We are using the reveal version just before where Hakim added the necessary callback to 
+allow easy addition of new languages. For some reason, the workaround by larskinn 
+does not work since pandoc seems to priduce a hickup, when the necessary code definitions
+are included here in the template. As a solution, the initialization of the respective code
+in Reveal.initialize(revealConfig); as a promise has to be outsourced to a non-parsed script
+which I still have to try. However, needs some more time. Unfortunatly this is not context free
+since it also needs to set highlight: { highlightOnLoad: false }, here and then to manually scan
+all code blocks and apply the plugin's highlighting code at the end which also did not work so
+far maybe due to timing issues (it is executed at the wrong time during the overall process. This
+comment here is just a reminder of where this was left of... -->
+
+<!-- <script src="$decker-support-dir$/js/highlightjs-6502acme.js"></script> -->
 
 </html>
