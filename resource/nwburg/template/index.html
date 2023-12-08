@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="$lang$" xml:lang="$lang$"$if(dir)$ dir="$dir$"$endif$ class="light">
+
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
@@ -28,9 +29,9 @@ $if(template.favicon)$
 $endif$
   <title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
   <!-- Default Pandoc CSS for HTML documents -->
-  <style>
+  <!-- <style>
     $styles.html()$
-  </style>
+  </style> -->
 
   <!-- Default values for CSS variables can live here. They can be overridden by
   meta data values. -->
@@ -80,37 +81,100 @@ $endfor$
 $for(header-includes)$
   $header-includes$
 $endfor$
+
 </head>
+
 <body class="index"  onload="initIndexPage()">
+  <header role="banner" class="page-header">
+    <div class="page-header__logo">
+      <a class="page-header__logo-link" title="Zur Startseite" href="http://www.uni-wuerzburg.de/startseite/">
+          <img src=$template.index-page.start-banner$ class="page-header__logo-full">
+      </a>
+      <img src=$template.index-page.background$ class="page-header__logo-background">
+    </div>
+  </header>  
+
+  <div class="page-hero">
+    <div id="react-placeholder-navigation">
+      <nav class="navigation" role="navigation">
+        <div class="navigation-header" id="hero">
+          <div>
+            <div class="category-title">
+              <a href="/">Home</a>
+            </div>
+          </div>
+          $if(index-menu)$
+          $for(index-menu)$
+          <div>
+            <div class="category-title">
+              <a href="$index-menu.href$" onmouseover="toggleIndexMenus(this)">$index-menu.title$</a>
+              $if(index-menu.items)$
+              <div class="navigation-submenu">
+                <div class="navigation-submenu-column">
+                $for(index-menu.items)$
+                  <a href="$index-menu.items.href$" class="navigation-submenu-column-header">$index-menu.items.title$</a>
+                $endfor$
+                </div>
+              </div>
+              $endif$
+            </div>
+          </div>
+          $endfor$
+          $endif$
+        </div>
+      </nav>
+    </div>
+
+  $if(template.index-page.hero-image)$
+    <div class="slick-element slick-initialized slick-slider slick-dotted">
+      <div class="slick-list draggable">
+        <div class="slick-track">
+          <div class="slick-slide" data-slick-index="0" aria-hidden="true" style="width: 1200px; position: relative; left: 0px; top: 0px; z-index: 998; transition: opacity 1000ms ease 0s;" role="tabpanel" id="slick-slide00" tabindex="-1" aria-describedby="slick-slide-control00">
+            <div>
+              <div class="image" style="width: 100%; display: inline-block;">
+                <div>
+                  <img src="$template.index-page.hero-image$" sizes="(min-width: 1180px) 1200px, (min-width: 980px) 1020px, (min-width: 740px) 720px, 100vw">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  $endif$
+  </div>
+    
+  <script src="$decker-support-dir$/js/index.js"></script>
+
 $for(include-before)$
-$include-before$
-$endfor$
-$if(title)$
-<header id="title-block-header">
-$if(template.index-page.banner)$
-   <div class="index-page-banner">
-      <img src=$template.index-page.banner$>
-   </div>
-$endif$
-<h1 class="title">$title$</h1>
-$if(subtitle)$
-<h2 class="subtitle">$subtitle$</h2>
-$endif$
-</header>
-$endif$
-$if(toc)$
-<nav id="$idprefix$TOC" role="doc-toc">
-$if(toc-title)$
-<h2 id="$idprefix$toc-title">$toc-title$</h2>
-$endif$
-$table-of-contents$
-</nav>
-$endif$
-$body$
-$for(include-after)$
-$include-after$
+  $include-before$
 $endfor$
 
+$if(title)$
+  <div class="header-title">
+    <a href="/">$title$</a>
+    $if(subtitle)$
+    <a href="/">$subtitle$</a>
+    $endif$
+  </div>
+$endif$
+
+$if(toc)$
+  <nav id="$idprefix$TOC" role="doc-toc">
+$if(toc-title)$
+    <h2 id="$idprefix$toc-title">$toc-title$</h2>
+$endif$
+    $table-of-contents$
+  </nav>
+$endif$
+
+  $body$
+
+$for(include-after)$
+  $include-after$
+$endfor$
+
+  <script src="$decker-support-dir$/js/wue-index.js"></script>
   <script src="$decker-support-dir$/js/index.js"></script>
 
   <script>
@@ -120,7 +184,12 @@ $endfor$
         window.location.reload(true);
     };
   </script>
+
+  <div class="u-centerContent u-margin-bottom-10 u-color-disabled">
+    <a href="https://www.hci.uni-wuerzburg.de/legal/" class="u-color-disabled">Legal Information</a>
+  </div>
 </body>
+
 <footer>
    $for(author)$
    <p class="author">$author$</p>
@@ -129,4 +198,5 @@ $endfor$
    <p class="date">$date$</p>
    $endif$   
 </footer>
+
 </html>
