@@ -1,8 +1,14 @@
-$if(title)$
-<section id="$idprefix$title-slide" $for(title-slide-attributes/pairs)$ $it.key$="$it.value$" $endfor$>
-
+<section id="title-slide">
   <div class="decker">
     <div class="alignment">
+      <header>
+        <h1 class="title">$title$</h1>
+        $if(subtitle)$
+        <h2 class="subtitle">$subtitle$</h2>
+        $endif$
+      </header>
+
+<!-- Leave this here for debug purposes
 
       $if(rpv-test.leaf-path)$
       <img style="width: 100px;" src="$rpv-test.leaf-path$">
@@ -13,20 +19,49 @@ $if(title)$
       $endif$
       $rpv-test.branch.no-path$
 
-      <h1 class="title">$title$</h1>
-      $if(subtitle)$
-      <h2 class="subtitle">$subtitle$</h2>
+    -->
+      $if(authors)$
+      <div class="authors">
+        $for(authors)$
+        $it:author-template.html()$
+        $endfor$
+      </div>
       $endif$
-      $for(author)$
-      <p class="author">$author$</p>
-      $endfor$
-      $for(institute)$
-      <p class="institute">$institute$</p>
-      $endfor$
+      
+      $if(copyright)$
+      $copyright:copyright-template.html()$
+      $endif$
+
+      $if(author)$
+      $author:author-template.html()$
+      $endif$
+
+      $if(affiliation)$
+      $affiliation:affiliation-template.html()$
+      $endif$
+
       $if(date)$
-      <p class="date">$date$</p>
+        <div class="date"> $date$ </div>
+      $endif$
+
+      $if(teaser)$
+      <div class="teaser">
+        $teaser:image-template.html()$
+      </div>
+      $endif$
+
+      $if(logos)$
+      <div class="logos">
+        $for(logos)$
+        <div class="logo">
+          $it:image-template.html()$
+        </div>
+        $endfor$
+      </div>
+      $endif$
+      $if(showDeckerLink)$
+      <a class="decker-link" href="https://github.com/decker-edu/decker/">🚀 by Decker</a>
       $endif$
     </div>
   </div>
 </section>
-$endif$

@@ -70,7 +70,7 @@ serverPort = 8888
 
 serverUrl = "http://localhost:" ++ show serverPort
 
-generatedIndexSource = transientDir </> "index.md.generated"
+generatedIndexSource = (</> "index.md.generated") <$> transientDir
 
 generatedIndex = publicDir </> "index-generated.html"
 
@@ -88,6 +88,8 @@ runArgs args = do
 
 deckerRules = do
   (getGlobalMeta, getDeps, getTemplate) <- prepCaches
+  generated <- liftIO generatedIndexSource
+  transient <- liftIO transientDir
   want ["html"]
   addHelpSuffix "Commands:"
   addHelpSuffix "  - clean - Remove all generated files."
@@ -95,6 +97,7 @@ deckerRules = do
   addHelpSuffix "  - example - Create an example project."
   addHelpSuffix "  - serve - Start just the server."
   addHelpSuffix "  - crunch - Compress all recordings to smaller size. Takes a while and will drain your battery."
+  addHelpSuffix "  - transcribe - Transcribe recorded videos. Takes a while and will drain your battery."
   addHelpSuffix "  - pdf - Build PDF versions of all decks (*-deck.md)."
   addHelpSuffix "  - version - Print version information"
   addHelpSuffix "  - check - Check the existence of usefull external programs"
@@ -169,6 +172,8 @@ deckerRules = do
       needPublicIfExists $ replaceSuffix "-deck.md" "-times.json" src
       needPublicIfExists $ replaceSuffix "-deck.md" "-transcript.json" src
       needPublicIfExists $ replaceSuffix "-deck.md" "-recording.vtt" src
+      needPublicIfExists $ replaceSuffix "-deck.md" "-recording-en.vtt" src
+      needPublicIfExists $ replaceSuffix "-deck.md" "-recording-de.vtt" src
     --
     publicDir <//> "*-deck.pdf" %> \out -> do
       let src = replaceSuffix "-deck.pdf" "-deck.html" out
@@ -199,7 +204,7 @@ deckerRules = do
     --
     publicDir <//> "*.css" %> \out -> do
       let src = makeRelative publicDir out
-      putNormal $ "# copy (for " <> out <> ")"
+      putVerbose $ "# copy (for " <> out <> ")"
       copyFile' src out
       whenM (liftIO $ Dir.doesFileExist (src <.> "map")) $
         copyFile' (src <.> "map") (out <.> "map")
@@ -238,18 +243,18 @@ deckerRules = do
           need [indexSource, generatedIndex]
           markdownToHtml htmlIndex meta getTemplate indexSource out
         else do
-          need [generatedIndexSource]
-          markdownToHtml htmlIndex meta getTemplate generatedIndexSource out
+          need [generated]
+          markdownToHtml htmlIndex meta getTemplate generated out
     --
-    generatedIndexSource %> \out -> do
+    generated %> \out -> do
       deps <- getDeps
       meta <- getGlobalMeta
       writeIndexLists meta deps out
     --
     generatedIndex %> \out -> do
-      need [generatedIndexSource]
+      need [generated]
       meta <- getGlobalMeta
-      markdownToHtml htmlIndex meta getTemplate generatedIndexSource out
+      markdownToHtml htmlIndex meta getTemplate generated out
   --
   priority 3 $ do
     "**/*.css" %> \out -> do
@@ -292,7 +297,7 @@ deckerRules = do
   priority 2 $
     publicDir <//> "//" %> \out -> do
       let src = makeRelative publicDir out
-      putNormal $ "# copy (for " <> out <> ")"
+      putVerbose $ "# copy (for " <> out <> ")"
       copyFile' src out
   --
   withTargetDocs "Copy static file to public dir." $

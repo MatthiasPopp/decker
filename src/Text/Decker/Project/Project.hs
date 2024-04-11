@@ -9,10 +9,10 @@
 module Text.Decker.Project.Project
   ( scanTargetsToFile,
     setProjectDirectory,
-    -- , dachdeckerFromMeta
     unusedResources,
     scanTargets,
     excludeDirs,
+    excludeGlob,
     static,
     sources,
     resources,
@@ -29,6 +29,7 @@ module Text.Decker.Project.Project
     fromMetaValue,
     toMetaValue,
     readTargetsFile,
+    alwaysExclude,
   )
 where
 
@@ -49,6 +50,7 @@ import Development.Shake hiding (Resource)
 import Relude
 import System.Directory qualified as Directory
 import System.FilePath qualified as FP
+import System.FilePath.Glob
 import System.FilePath.Posix
 import Text.Decker.Internal.Common
 import Text.Decker.Internal.Helper
@@ -154,9 +156,9 @@ findProjectRoot = do
       hasYaml <- Directory.doesFileExist (dir </> globalMetaFileName)
       hasGit <- Directory.doesDirectoryExist (dir </> ".git")
       if
-          | hasYaml || hasGit -> return dir
-          | FP.isDrive dir -> return start
-          | otherwise -> search (FP.takeDirectory dir) start
+        | hasYaml || hasGit -> return dir
+        | FP.isDrive dir -> return start
+        | otherwise -> search (FP.takeDirectory dir) start
 
 -- Move CWD to the project directory.
 setProjectDirectory :: IO ()
@@ -189,7 +191,7 @@ sourceRegexes :: [String] =
     "\\`(^_).*\\.scss\\'"
   ]
 
-alwaysExclude = [publicDir, transientDir, "dist", ".git", ".vscode"]
+alwaysExclude = [publicDir, "dist", ".git", ".vscode", ".stack-work"]
 
 questSuffix = "-quest.yaml"
 
@@ -197,8 +199,13 @@ questHTMLSuffix = "-quest.html"
 
 excludeDirs :: Meta -> [String]
 excludeDirs meta =
-  map normalise $
-    alwaysExclude <> lookupMetaOrElse [] "exclude-directories" meta
+  map normalise
+    $ alwaysExclude
+    <> lookupMetaOrElse [] "exclude-directories" meta
+
+-- glob patterns used to exclude paths from watching
+excludeGlob :: Meta -> [Pattern]
+excludeGlob = map compile . lookupMetaOrElse [] "watch.exclude"
 
 staticResources meta =
   lookupMetaOrElse [] "static-resource-dirs" meta
@@ -206,8 +213,9 @@ staticResources meta =
 
 unusedResources :: Meta -> IO [FilePath]
 unusedResources meta = do
+  live <- liveFile
   srcs <- Set.fromList <$> fastGlobFiles (excludeDirs meta) [] projectDir
-  live <- Set.fromList <$> String.lines . decodeUtf8 <$> readFileBS liveFile
+  live <- Set.fromList . String.lines . decodeUtf8 <$> readFileBS live
   return $ Set.toList $ Set.difference srcs live
 
 scanTargetsToFile :: (MonadIO m, Partial) => Meta -> FilePath -> m ()
@@ -251,6 +259,6 @@ scanTargets meta = do
     calcTarget baseDir srcSuffix targetSuffix source =
       baseDir </> replaceSuffix srcSuffix targetSuffix source
     calcTargets' baseDir srcSuffix targetSuffix sources =
-      Map.fromList $
-        map (\s -> (calcTarget baseDir srcSuffix targetSuffix s, s)) $
-          filter (srcSuffix `List.isSuffixOf`) sources
+      Map.fromList
+        $ map (\s -> (calcTarget baseDir srcSuffix targetSuffix s, s))
+        $ filter (srcSuffix `List.isSuffixOf`) sources

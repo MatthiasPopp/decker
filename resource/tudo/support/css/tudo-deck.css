@@ -478,12 +478,12 @@ div.align-right > p {
   width: auto;
 }
 
-.reveal blockquote p:last-child {
+.reveal blockquote p:last-child:not(:first-child) {
   display: block;
   text-align: right;
   width: 100%;
 }
-.reveal blockquote p:last-child::before {
+.reveal blockquote p:last-child:not(:first-child)::before {
   content: "—";
   margin-right: 0.2em;
 }
@@ -493,18 +493,18 @@ div.align-right > p {
  **************************************************/
 
 /* code block */
-div.sourceCode > pre.sourceCode {
+.reveal .media .code pre {
   display: block;
   position: relative;
-  margin: 0;
+  margin: auto;
   padding: 0.5em 0.75em;
-  width: auto;
-  text-align: center;
+  text-align: left;
   max-height: 500px;
   overflow: auto;
   background: var(--shade1);
   border: 1px solid var(--shade2);
   border-radius: 4px;
+  font-size: 0.5em;
 }
 
 /* inline source code */
@@ -522,7 +522,6 @@ pre > code.sourceCode {
   padding: 0;
   white-space: pre;
   position: relative;
-  font-size: 0.5em;
   overflow: auto;
   max-height: 100%;
   box-sizing: border-box;
@@ -568,7 +567,7 @@ pre.line-numbers code > span > a:first-child::before {
   border: none;
   display: inline-block;
   user-select: none;
-  width: 1.5em;
+  width: 2em;
   margin-right: 1em;
   color: var(--shade3);
 }
@@ -909,6 +908,7 @@ section#title-slide h1 {
   margin: 20px !important;
   box-sizing: border-box;
   line-height: 1.5;
+  text-wrap: balance;
 }
 
 section#title-slide h2 {
@@ -921,9 +921,9 @@ section#title-slide h2 {
   line-height: 1.5;
 }
 
-section#title-slide img.teaser {
+section#title-slide div.teaser img {
   margin: 30px 0 0 0;
-  height: 250px;
+  height: 200px;
   width: auto;
   object-fit: contain;
 }
@@ -934,6 +934,14 @@ section#title-slide div.author {
   font-style: normal;
   font-size: 1em;
   text-align: center;
+  color: var(--shade6);
+}
+
+section#title-slide div.author > img {
+  margin: 30px 0 20px 0;
+  height: 150px;
+  width: auto;
+  object-fit: contain;
 }
 
 section#title-slide div.affiliation {
@@ -942,6 +950,16 @@ section#title-slide div.affiliation {
   font-style: normal;
   font-size: 0.8em;
   text-align: center;
+  color: var(--shade5);
+}
+
+section#title-slide div.date {
+  margin: 10px 0 0 0;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 0.8em;
+  text-align: center;
+  color: var(--shade5);
 }
 
 section#title-slide div.authors {
@@ -950,8 +968,9 @@ section#title-slide div.authors {
   justify-content: space-around;
 }
 
-section#title-slide img.logo {
-  height: 10%;
+section#title-slide .logo img {
+  height: 100%;
+  max-height: 100%;
 }
 
 section#title-slide img.affiliation-logo {
@@ -983,7 +1002,7 @@ section#title-slide .decker-link:hover {
 }
 
 /*********************************************
- * COMMENT BUBBLES
+ * COMMENT BUBBLES & POP-UP
  *********************************************/
 
 .reveal .bubble {
@@ -994,6 +1013,41 @@ section#title-slide .decker-link:hover {
   padding: 10px;
   margin: 0.1em auto 0.5em auto;
   border-radius: 5px;
+}
+
+[popup] {
+  display: block;
+  position: absolute;
+  box-shadow: 0 0 30px 15px rgba(0, 0, 0, 0.4);
+  z-index: 3000;
+  background: var(--accent3);
+  color: white;
+  font-size: 1.25em;
+  padding: 0.5em;
+  border-radius: 0.25em;
+  font-weight: bold;
+}
+
+/* A centered block. This is very clever. */
+[popup="center"] {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+}
+
+/* A centered box that is also tilted up. */
+[popup="center-up"] {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-23deg) scale(1);
+}
+
+/* A centered box that is also tilted down. */
+[popup="center-down"] {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(23deg) scale(1);
 }
 
 /*********************************************
@@ -1261,6 +1315,9 @@ section#title-slide .decker-link:hover {
   z-index: 1;
   font-size: 1rem;
 }
+.reveal .show-answer:hover ul li {
+  visibility: visible;
+}
 
 /* once clicked, wrong answers are red */
 .reveal .quiz ul li.wrong {
@@ -1295,11 +1352,6 @@ section#title-slide .decker-link:hover {
   color: var(--quiz-border-color);
 }
 
-/* tool tips are shown on hover */
-.reveal .show-answer:hover ul li {
-  visibility: visible;
-}
-
 /*********************************************
  * override quiz-wue settings
  *********************************************/
@@ -1323,7 +1375,8 @@ section#title-slide .decker-link:hover {
   font: inherit;
   font-size: 0.8em;
   margin: 0.5em;
-  padding: 10px;
+  padding: 0.5em;
+  border-radius: 0.25em;
   border: 2px solid var(--blueish);
   color: var(--shade6);
   background-color: var(--shade1);
@@ -1339,11 +1392,13 @@ section#title-slide .decker-link:hover {
   font: inherit;
   font-size: 0.9em;
   font-weight: normal;
-  padding: 5px;
   border: 2px solid var(--blueish);
   color: var(--shade6);
   background-color: var(--shade1);
   outline: none;
+  margin: 0.5em;
+  padding: 0.5em;
+  border-radius: 0.25em;
 }
 
 .reveal .quiz-ic option {
@@ -1411,14 +1466,36 @@ section#title-slide .decker-link:hover {
   background-color: var(--shade1);
 }
 
-.reveal [class*="quiz-"] .show-right {
+.reveal [class*="quiz"] .show-right {
   background-color: var(--green-background-color);
   border-color: var(--green-border-color);
+  --quiz-icon: "\f00c";
+  --quiz-border-color: var(--green-border-color);
+  position: relative;
 }
 
 .reveal [class*="quiz"] .show-wrong {
   background-color: var(--red-background-color);
   border-color: var(--red-border-color);
+  --quiz-icon: "\f00d";
+  --quiz-border-color: var(--red-border-color);
+  position: relative;
+}
+
+.reveal [class*="quiz-"] .show-right::after,
+.reveal [class*="quiz-"] .show-wrong::after {
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  font-weight: 900;
+  font-family: "Font Awesome 5 Free";
+  content: var(--quiz-icon);
+  position: absolute;
+  font-size: 15px;
+  right: 0.2em;
+  bottom: -0.1em;
+  padding: 0.1em;
+  color: var(--quiz-border-color);
 }
 
 /*********************************************
@@ -1464,7 +1541,7 @@ section#title-slide .decker-link:hover {
   display: none;
 }
 
-div.qrcode.container {
+#qrcode-container {
   display: none;
   z-index: 4000;
   position: absolute;
@@ -1472,39 +1549,50 @@ div.qrcode.container {
   right: 0;
   bottom: 0;
   top: 0;
-  background-color: var(--shade0);
-}
-
-div.qrcode.container button {
-  position: absolute;
-  right: 1em;
-  top: 1em;
-}
-
-div.qrcode.container.show {
-  display: flex;
-}
-
-div.qrcode.container {
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
   flex-flow: column nowrap;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  gap: 0.5em;
+}
+#qrcode-container.show {
+  display: flex;
 }
 
-div.qrcode.container canvas {
+#qrcode-canvas {
   height: 66vh;
   min-height: 0;
   aspect-ratio: 1 / 1;
   background-color: white;
   padding: 0.5em;
-  border: 0.01em solid black;
-  border-radius: var(--block-border-radius);
+  border-radius: 0.25em;
+}
+#qrcode-canvas.smaller {
+  height: 33vh;
 }
 
-div.qrcode.container a {
+#qrcode-link {
+  display: block;
   font-size: 2rem;
   font-weight: bold;
+  padding: 0.5em;
+  border-radius: 0.25em;
+  background-color: var(--background-color);
+}
+
+#close-qr-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 4001;
+  background-color: var(--background-color);
+  border-radius: 100%;
+  color: var(--icon-inactive-color);
+}
+#close-qr-button:hover {
+  color: var(--icon-active-color);
 }
 
 /*********************************************
@@ -1533,9 +1621,15 @@ html.dark .light-only {
 html.dark
   .media
   :is(figure, .figure)
-  :is(svg, img, div.chart-container, iframe) {
+  :not(.MathJax)
+  > :is(svg, img, div.chart-container, iframe) {
   background-color: white;
   filter: brightness(90%) contrast(90%);
+}
+
+html.dark section#title-slide .logo {
+  background-color: var(--shade7);
+  border-radius: 0.5rem;
 }
 
 /*

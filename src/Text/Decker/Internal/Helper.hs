@@ -128,7 +128,7 @@ isDevelopmentRun = do
   progName <- getProgName
   cwd <- Dir.getCurrentDirectory
   exePath <- getExecutablePath
-  return $ progName == "<interactive>" || cwd `isPrefixOf` exePath
+  return $ progName == "<interactive>" || (".stack-work") `List.isInfixOf` exePath
 
 warnVersion :: IO ()
 warnVersion = do
