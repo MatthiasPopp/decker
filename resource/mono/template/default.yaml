@@ -4,6 +4,10 @@ poll-server: wss://tramberend.bht-berlin.de/quizzer/quiz
 # poll-server: ws://localhost:3003/quiz
 save-polls: true
 
+# enable some experimental features
+experiments:
+    fragment-templates: true
+
 palette:
   colors:
     light: # OKSolar (https://meat.io/oksolar)
@@ -69,3 +73,11 @@ reveal:
 
 css-variables:
   block-border-radius: 0.2em;
+
+template:
+  css:
+    - "/support/vendor/codapi-js/snippet.css"
+    - /support/css/hljs.css
+    - /support/css/codapi.css
+  js:
+    - "/support/vendor/codapi-js/snippet.js"
