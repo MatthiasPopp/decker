@@ -166,6 +166,8 @@ deckerRules = do
       need [src]
       meta <- getGlobalMeta
       markdownToHtml htmlDeck meta getTemplate src out
+      needPublicIfExists $ replaceSuffix "-deck.md" "-recording-de.vtt" src
+      needPublicIfExists $ replaceSuffix "-deck.md" "-recording-en.vtt" src
       needPublicIfExists $ replaceSuffix "-deck.md" "-recording.mp4" src
       needPublicIfExists $ replaceSuffix "-deck.md" "-annot.json" src
       needPublicIfExists $ replaceSuffix "-deck.md" "-manip.json" src
@@ -270,6 +272,12 @@ deckerRules = do
       putInfo $ "# plantuml (for " <> out <> ")"
       plantuml [src] (Just $ src -<.> "svg")
       liftIO $ Dir.renameFile (src -<.> "svg") out
+    --
+    "**/*.mmd.svg" %> \out -> do
+      let src = dropExtension out
+      need [src]
+      putInfo $ "# mermaid (for " <> out <> ")"
+      mermaid ["-i", src, "-o", out] (Just $ src -<.> "svg")
     --
     "**/*.dot.svg" %> \out -> do
       let src = dropExtension out
