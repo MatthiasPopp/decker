@@ -12,6 +12,8 @@ import Data.List
 import Data.Map.Strict qualified as Map
 import Data.Maybe
 import Data.String ()
+import Data.Text qualified as T
+import Data.Text.IO qualified as TIO
 import Data.Time.Format.ISO8601
 import Development.Shake
 import GHC.IO.Encoding
@@ -242,8 +244,28 @@ deckerRules = do
       exists <- liftIO $ Dir.doesFileExist indexSource
       if exists
         then do
-          need [indexSource, generatedIndex]
-          markdownToHtml htmlIndex meta getTemplate indexSource out
+          need [indexSource]
+          userContent <- liftIO $ TIO.readFile indexSource
+          if T.isInfixOf "INCLUDE_GENERATED" userContent
+            then do
+              generatedContent <- liftIO $ TIO.readFile generated
+              liftIO $ TIO.putStrLn generatedContent  -- Print the content of the generated file
+              let combinedContent = T.replace "INCLUDE_GENERATED" generatedContent userContent
+              -- Create a temporary file
+              (tmpFile, tmpHandle) <- liftIO $ openTempFile "/tmp" "index.md"
+              -- Ensure the temporary file is deleted if an exception is thrown
+              actionOnException
+                (do
+                  liftIO $ do
+                    -- Write the combined content to the temporary file
+                    TIO.hPutStr tmpHandle combinedContent
+                    hClose tmpHandle
+                  -- Convert the temporary file to HTML
+                  markdownToHtml htmlIndex meta getTemplate tmpFile out)
+                (liftIO $ removeFile tmpFile)
+            else do
+              need [indexSource, generatedIndex]
+              markdownToHtml htmlIndex meta getTemplate indexSource out
         else do
           need [generated]
           markdownToHtml htmlIndex meta getTemplate generated out
@@ -272,12 +294,6 @@ deckerRules = do
       putInfo $ "# plantuml (for " <> out <> ")"
       plantuml [src] (Just $ src -<.> "svg")
       liftIO $ Dir.renameFile (src -<.> "svg") out
-    --
-    "**/*.mmd.svg" %> \out -> do
-      let src = dropExtension out
-      need [src]
-      putInfo $ "# mermaid (for " <> out <> ")"
-      mermaid ["-i", src, "-o", out] (Just $ src -<.> "svg")
     --
     "**/*.dot.svg" %> \out -> do
       let src = dropExtension out
