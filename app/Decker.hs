@@ -249,8 +249,22 @@ deckerRules = do
           if T.isInfixOf "INCLUDE_GENERATED" userContent
             then do
               generatedContent <- liftIO $ TIO.readFile generated
-              liftIO $ TIO.putStrLn generatedContent  -- Print the content of the generated file
-              let combinedContent = T.replace "INCLUDE_GENERATED" generatedContent userContent
+              --liftIO $ TIO.putStrLn generatedContent  -- Print the content of the generated file
+
+              ---
+              let linesOfContent = T.lines generatedContent
+              let linesAfterHeader = dropWhile (not . T.isPrefixOf "```") linesOfContent
+              
+              -- wrap the content in a hidden div
+              let correctedContent = T.concat ["<div class=\"content\" style=\"display: none;\">\n", T.unlines linesAfterHeader, "</div>"]
+
+
+              liftIO $ TIO.putStrLn correctedContent  -- Print the content of the generated file 
+
+
+
+              ---
+              let combinedContent = T.replace "INCLUDE_GENERATED" correctedContent userContent
               -- Create a temporary file
               (tmpFile, tmpHandle) <- liftIO $ openTempFile "/tmp" "index.md"
               -- Ensure the temporary file is deleted if an exception is thrown
