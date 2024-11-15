@@ -102,6 +102,7 @@ transientDir :: IO FilePath
 transientDir = do
   tmp <- getTemporaryDirectory
   cwd <- getCurrentDirectory
+  --return "/Users/matthias/teaching/decker-github/transient" 
   return $ mkTmpDirName tmp cwd
 
 mkTmpDirName tmp cwd =
