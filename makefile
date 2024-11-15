@@ -32,6 +32,11 @@ install: clean-build
 	rm -f "$(local-bin-path)/$(base-name)" 
 	cp "$(executable)" "$(local-bin-path)/$(base-name)"
 
+install-dev: build
+	mkdir -p "out"
+	rm -f "out/$(base-name)-dev"
+	cp "$(executable)" "out/$(base-name)-dev"
+
 unclean-install: build
 	mkdir -p "$(local-bin-path)"
 	cp "$(executable)" "$(local-bin-path)/$(base-name)"

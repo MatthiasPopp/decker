@@ -25,3 +25,4 @@ private/
 stack.yaml.lock
 test/decks/*.svg
 index.md.generated
+out/decker-dev

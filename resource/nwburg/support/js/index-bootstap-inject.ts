@@ -485,4 +485,4 @@ async function main() {
 }
 
 // Run the main function when the DOM is ready
-// document.addEventListener('DOMContentLoaded', main);
+document.addEventListener('DOMContentLoaded', main);

@@ -43,8 +43,7 @@ import Text.Decker.Writer.CSS (computeCssColorVariables, computeCssVariables)
 import Text.Pandoc hiding (lookupMeta)
 import Text.Pandoc.Citeproc
 import Text.Pandoc.Shared
-import qualified GHC.Base as System
-import qualified Data.ByteString.Char8 as System.IO
+import Text.Decker.Filter.FragmentTemplate (expandFragmentTemplates)
 
 -- | Reads a Markdown file and run all the the Decker specific filters on it.
 -- The path is assumed to be an absolute path in the local file system under
@@ -52,19 +51,18 @@ import qualified Data.ByteString.Char8 as System.IO
 readAndFilterMarkdownFile :: Disposition -> Meta -> FilePath -> Action Pandoc
 readAndFilterMarkdownFile disp globalMeta docPath = do
   let docBase = takeDirectory docPath
-  doc1 <- readMarkdownFile globalMeta docPath
-  doc2 <- mergeDocumentMeta globalMeta doc1
-  doc3 <- mergeDocumentMeta globalMeta doc2
-  doc4 <- processMeta doc3
-  doc5 <- processCites doc4
-  doc6 <- calcRelativeResourcePaths docBase doc5
-  doc7 <- runDynamicFilters Before docBase doc6
-  doc8 <- runNewFilter disp examinerFilter docBase doc7
-  doc9 <- runNewFilter disp expandTemplateMacros docBase doc8
-  doc10 <- deckerMediaFilter disp docPath doc9
-  doc11 <- processPandoc (deckerPipeline disp) docBase disp doc10 
-
-  runDynamicFilters After docBase doc11
+  readMarkdownFile globalMeta docPath
+    >>= mergeDocumentMeta globalMeta
+    >>= processMeta
+    >>= processCites
+    >>= calcRelativeResourcePaths docBase
+    >>= runDynamicFilters Before docBase
+    >>= runNewFilter disp examinerFilter docPath
+    >>= runNewFilter disp expandTemplateMacros docPath
+    >>= runNewFilter disp expandFragmentTemplates docPath
+    >>= deckerMediaFilter disp docPath
+    >>= processPandoc (deckerPipeline disp) docBase disp
+    >>= runDynamicFilters After docBase
 
 processMeta (Pandoc meta blocks) = do
   let processed = computeCssColorVariables $ computeCssVariables meta
