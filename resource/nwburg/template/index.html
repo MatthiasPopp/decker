@@ -2,208 +2,665 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="$lang$" xml:lang="$lang$" $if(dir)$ dir="$dir$" $endif$ class="light">
 
 <head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="pandoc" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
 
-  <script type="module">
-    /* Store JSON encoded Pandoc meta data in a global variable. */
-    import initializeDecker from "./$decker-support-dir$/js/decker.js";
-    initializeDecker("$decker-meta-url$");
-  </script>
+    <script type="module">
+        /* Store JSON encoded Pandoc meta data in a global variable. */
+        import initializeDecker from "./$decker-support-dir$/js/decker.js";
+        initializeDecker("$decker-meta-url$");
+    </script>
 
-
-  $for(author-meta)$
-  <meta name="author" content="$author-meta$" />
-  $endfor$
-  $if(date-meta)$
-  <meta name="dcterms.date" content="$date-meta$" />
-  $endif$
-  $if(keywords)$
-  <meta name="keywords" content="$for(keywords)$$keywords$$sep$, $endfor$" />
-  $endif$
-  $if(description-meta)$
-  <meta name="description" content="$description-meta$" />
-  $endif$
-  $if(template.favicon)$
-  <link rel="shortcut icon" href="$template.favicon$">
-  $endif$
-  <title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
-  <!-- Default Pandoc CSS for HTML documents -->
-  <style>
-    $styles.html()$
-  </style>
-
-  $if(index.exclude-dirs)$
-  <!-- Exclude directories from search index -->
-  <!-- The exclude dirs is a list of directories. Create a ul with li elements -->
-  <ul id="search-exclude-dirs" style="display: none;">
-    $for(index.exclude-dirs)$
-    <li>$index.exclude-dirs$</li>
+    $for(author-meta)$
+    <meta name="author" content="$author-meta$" />
     $endfor$
-  </ul>
-  $endif$
+    $if(date-meta)$
+    <meta name="dcterms.date" content="$date-meta$" />
+    $endif$
+    $if(description-meta)$
+    <meta name="description" content="$description-meta$" />
+    $endif$
+    $if(template.favicon)$
+    <link rel="shortcut icon" href="$template.favicon$">
+    $endif$
+    <title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
+    <!-- Default Pandoc CSS for HTML documents -->
+    <style>
+        $styles.html()$
+    </style>
 
+    $if(index.exclude-dirs)$
+    <!-- Exclude directories from search index -->
+    <!-- The exclude dirs is a list of directories. Create a ul with li elements -->
+    <ul id="search-exclude-dirs" style="display: none;">
+        $for(index.exclude-dirs)$
+        <li>$index.exclude-dirs$</li>
+        $endfor$
+    </ul>
+    $endif$
 
-
-  <!-- Default values for CSS variables can live here. They can be overridden by
+    <!-- Default values for CSS variables can live here. They can be overridden by
   meta data values. -->
-  <link rel="stylesheet" href="$decker-support-dir$/css/variables.css">
+    <link rel="stylesheet" href="$decker-support-dir$/css/variables.css">
 
-  <!-- Transfer meta data values from keys `palette.colors` and `css-variables`
+    <!-- Transfer meta data values from keys `palette.colors` and `css-variables`
   into a style sheet. Default values can come from `variables.css`. -->
-  <style class="css-declarations">
-    @media (prefers-color-scheme: light) {
-      :root {
-        $for(css-light-color-declarations)$ $css-light-color-declarations$ $endfor$
-      }
+    <style class="css-declarations">
+        @media (prefers-color-scheme: light) {
+            :root {
+                $for(css-light-color-declarations)$ $css-light-color-declarations$ $endfor$
+            }
 
-      :root.dark {
-        $for(css-dark-color-declarations)$ $css-dark-color-declarations$ $endfor$
-      }
-    }
+            :root.dark {
+                $for(css-dark-color-declarations)$ $css-dark-color-declarations$ $endfor$
+            }
+        }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        $for(css-dark-color-declarations)$ $css-dark-color-declarations$ $endfor$
-      }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                $for(css-dark-color-declarations)$ $css-dark-color-declarations$ $endfor$
+            }
 
-      :root.light {
-        $for(css-light-color-declarations)$ $css-light-color-declarations$ $endfor$
-      }
-    }
+            :root.light {
+                $for(css-light-color-declarations)$ $css-light-color-declarations$ $endfor$
+            }
+        }
 
-    :root {
-      $for(css-declarations)$ $css-declarations$ $endfor$
-    }
-  </style>
+        :root {
+            $for(css-declarations)$ $css-declarations$ $endfor$
+        }
+    </style>
 
-  <link rel="stylesheet" href="$decker-support-dir$/css/index.css">
-  $for(template.css)$
-  <link rel="stylesheet" href="$template.css$" />
-  $endfor$
+    <link rel="stylesheet" href="$decker-support-dir$/css/index.css">
+    $for(template.css)$
+    <link rel="stylesheet" href="$template.css$" />
+    $endfor$
+    <link rel="stylesheet" href="$decker-support-dir$/css/main.css">
+    <link rel="stylesheet" href="$decker-support-dir$/css/cards-grid.css">
 
-  $for(header-includes)$
-  $header-includes$
-  $endfor$
+    $for(header-includes)$
+    $header-includes$
+    $endfor$
+
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+    <!-- Include jQuery to request html content of each presentation -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include Slick Carousel JS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <!-- Add the slick-theme.css if you want default styling -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <!-- Add the slick-theme.css if you want default styling -->
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+    <!-- in place css that is to be developed. this contains definitions for the grid layout as well as both sides of the flip cards and cards  -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+    <script src="/support/js/slider.js" type="text/javascript"></script>
 </head>
 
 <body class="index" onload="initIndexPage()">
-  <div class="default-layout">
-    $for(include-before)$
-    $include-before$
-    $endfor$
-    $if(title)$
-    <header id="title-block-header">
-      $if(template.index-page.banner)$
-      <div class="index-page-banner">
-        <img src=$template.index-page.banner$>
-      </div>
-      $endif$
-      <h1 class="title">$title$</h1>
-      $if(subtitle)$
-      <h2 class="subtitle">$subtitle$</h2>
-      $endif$
-    </header>
-    $endif$
-    $if(toc)$
-    <nav id="$idprefix$TOC" role="doc-toc">
-      $if(toc-title)$
-      <h2 id="$idprefix$toc-title">$toc-title$</h2>
-      $endif$
-      $table-of-contents$
-    </nav>
-    $endif$
-    $body$
-    $for(include-after)$
-    $include-after$
-    $endfor$
-  </div>
+    <div class="default-layout">
+        $for(include-before)$
+        $include-before$
+        $endfor$
+        $if(title)$
+        <header id="title-block-header">
+            $if(template.index-page.banner)$
+            <div class="index-page-banner">
+                <img src=$template.index-page.banner$>
+            </div>
+            $endif$
+            <h1 class="title">$title$</h1>
+            $if(subtitle)$
+            <h2 class="subtitle">$subtitle$</h2>
+            $endif$
+        </header>
+        $endif$
+        $if(toc)$
+        <nav id="$idprefix$TOC" role="doc-toc">
+            $if(toc-title)$
+            <h2 id="$idprefix$toc-title">$toc-title$</h2>
+            $endif$
+            $table-of-contents$
+        </nav>
+        $endif$
+        $body$
+        $for(include-after)$
+        $include-after$
+        $endfor$
+    </div>
 
-  <script src="$decker-support-dir$/js/index.js"></script>
+    <script src="$decker-support-dir$/js/index.js"></script>
 
-  <script>
-    var socket = new WebSocket("ws://" + location.host + "/reload");
-    socket.onmessage = function (event) {
-      if (event.data.startsWith("reload!"))
-        window.location.reload(true);
-    };
-  </script>
+    <script>
+        var socket = new WebSocket("ws://" + location.host + "/reload");
+        socket.onmessage = function (event) {
+            if (event.data.startsWith("reload!"))
+                window.location.reload(true);
+        };
+    </script>
 
-  <!--  -->
+    <!--  -->
 
-  <!-- <div class="section tile-layout">
+    <!-- <div class="section tile-layout">
     <div class="grid-container" id="filterContainer">
 
     </div>
   </div> -->
 
-  <div class="grid-container" id="filterContainer">
-    <div class="filter-column card">
-      <div class="card-body">
-        <h3 class="card-title">Tags</h3>
-        <label>
-          <input type="checkbox" value="tag1"> Tag 1
-        </label>
-        <label>
-          <input type="checkbox" value="tag2"> Tag 2
-        </label>
-        <!-- Add more tags as needed -->
-      </div>
-    </div>
-    <div class="filter-column card">
-      <div class="card-body">
-        <h3 class="card-title">Chapter</h3>
-        <label>
-          <input type="radio" name="chapter" value="all" checked> All
-        </label>
-        <label>
-          <input type="radio" name="chapter" value="chapter1"> Chapter 1
-        </label>
-        <label>
-          <input type="radio" name="chapter" value="chapter2"> Chapter 2
-        </label>
-        <!-- Add more chapters as needed -->
-      </div>
-    </div>
-    <div class="filter-column card">
-      <div class="card-body">
-        <h3 class="card-title">Buzzwords?</h3>
-        <div>
-            I have no idea, what to place here. Maybe some checkboxes?
-            The resonsive design would be a nightmare though ...
+    <header role="banner" class="page-header">
+        <div class="page-header__logo">
+            <a class="page-header__logo-link" title="Zur Startseite" href="http://www.uni-wuerzburg.de/startseite/">
+                <img src="/support/vendor/images/theme/uni-wuerzburg-logo.svg" class="page-header__logo-full">
+            </a>
+            <img src="/support/vendor/images/theme/uni-wuerzburg-header-background.png"
+                class="page-header__logo-background">
         </div>
-        <label>
-          <input type="checkbox" value="buzzword1"> Buzzword 1
-        </label>
-        <label>
-          <input type="checkbox" value="buzzword2"> Buzzword 2
-        </label>
-        <!-- Add more buzzwords as needed -->
-      </div>
+
+<!-- define  -->
+        <script>
+            let filters = [
+                $for(template.index-page.filters)$
+                {
+                    "id": "$template.index-page.filters.id$",
+                    "label": "$template.index-page.filters.label$"
+                },
+                $endfor$
+            ];
+        </script>
+
+    </header>
+
+    <div class="page-hero content">
+        <script>
+            window.menu = [
+                {
+                    title: "Home",
+                    href: "/",
+                },
+                {
+                    title: "Lecture",
+                    href: "#",
+                    items: [
+                        { title: "Week 1", href: "#", week: 1 },
+                        { title: "Week 2", href: "#", week: 2 },
+                        { title: "Week 3", href: "#", week: 3 },
+                        // Add more weeks as needed
+                    ],
+                },
+                {
+                    title: "Exercise",
+                    href: "#",
+                    items: [
+                        { title: "Week 1", href: "#", week: 1 },
+                        { title: "Week 2", href: "#", week: 2 },
+                        { title: "Week 3", href: "#", week: 3 },
+                        { title: "Week 3", href: "#", week: 3 },
+                        // Add more weeks as needed
+                    ],
+                },
+            ];
+        </script>
+        <div id="react-placeholder-navigation">
+            <nav class="navigation" role="navigation">
+                <div class="navigation-header">
+                    <div>
+                        <div class="category-title"><a href="/" class="">Home</a></div>
+                    </div>
+                    <div>
+                        <div class="category-title"><a href="/research/" class="">Research</a></div>
+                    </div>
+                    <div>
+                        <div class="category-title"><a href="/teaching/" class="">Teaching</a></div>
+                    </div>
+                    <div>
+                        <div class="category-title"><a href="/programs/" class="">Programs</a></div>
+                    </div>
+                    <div>
+                        <div class="category-title"><a href="/about/chair/people/" class="">About</a></div>
+                    </div>
+                    <div>
+                        <div class="category-title"><a href="/contact/" class="">Contact</a></div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <!-- create an image carousel -->
+        <div class="w3-content w3-display-container">
+            $if(template.index-page.carousel)$
+            $for(template.index-page.carousel)$
+            <img class="mySlides" src="$template.index-page.carousel$" alt="Slide Image">
+            $endfor$
+            $endif$
+        </div>
+        <div class="header-title">
+            <a href="/">
+                $if(title-prefix)$
+                <h1>$title-prefix$</h1>
+                $endif$
+            </a>
+        </div>
+        <div class="content">
+            <div class="content">
+                <details open class="detailsFilter">
+                    <summary style="font-weight:bolder; font-size: 125%">Filter</summary>
+                    <div id="react-placeholder-filterSelector" class="filter-container">
+                        <div class="block block-filter">
+                            <b class="filter-heading">
+                                Focus
+                                <a class="select-all-filter" onclick="deselectAllFilters()">deselect all</a>
+                            </b>
+                            <div class="filter-grid" id="filterGrid">
+                                <!-- Filters will be dynamically generated here -->
+                            </div>
+                        </div>
+                    </div>
+                </details>
+            </div>
+            <main>
+                <section class="grid">
+                    <!-- Add your grid layout here -->
+                </section>
+            </main>
+            <!-- Sophisticated grid layout with flex layout spanning 100 width with wrapping -->
+            <div class="card-grid" id="tileContainer">
+                <!-- More grid items as needed -->
+            </div>
+        </div class="content">
+        <div class="page-footer">
+            <div class="page-footer-top">
+                <div class="column-layout">
+                    <div>
+                        <div class="title">
+                            Follow our Social Media Channels
+                        </div>
+                        <div style="
+                        display: flex;
+                        align-items: center;
+                        justify-content:  flex-start;
+                    ">
+                            <a href="https://www.youtube.com/user/hciwuerzburg" style="padding-right:20px;"><img
+                                    src="/support/vendor/images/theme/youtube.svg"
+                                    style="max-width: 61px; margin: 7px 7px 0 1px; opacity: 0.8;"></a>
+                            <a href="https://www.facebook.com/hciwuerzburg" style="padding-right:20px;"><img
+                                    src="/support/vendor/images/theme/facebook.png"
+                                    style="max-width:97px; margin: 7px 7px 0 1px; opacity: 0.8;"></a>
+                            <a href="https://twitter.com/hci_wurzburg" style="padding-right:20px;"><img
+                                    src="/support/vendor/images/theme/twitter.png"
+                                    style="max-width: 54px; margin: 7px 60px 0 -8px; opacity: 0.8;"></a>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="title">
+                            <a href="/contact/">Contact</a>
+                        </div>
+                        Lehrstuhl für<br>
+                        Mensch-Computer-Interaktion<br>
+                        Universität Würzburg<br>
+                        Emil-Fischer-Straße 50<br>
+                        97074 Würzburg<br>
+                    </div>
+                    <div>
+                        <div class="title">How to Find Us</div>
+                        <a href="https://wueaddress.uni-wuerzburg.de/building/9050">
+                            <div class="image wide " style="">
+                                <div>
+                                    <img src="/support/vendor/images/theme/map-new.png" alt="" style="width: 100%;">
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="page-footer-bottom">
+                <div class="column-layout">
+                    <div><a href="https://www.uni-wuerzburg.de">University Main Page</a></div>
+                    <div><a href="http://www.uni-wuerzburg.de/startseite/">About the University</a></div>
+                    <div><a href="https://www.uni-wuerzburg.de/sonstiges/kontakt/">University Contact</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="u-centerContent u-margin-bottom-10 u-color-disabled">
+            <a href="https://www.hci.uni-wuerzburg.de/legal/" class="u-color-disabled">Legal Information</a>
+        </div>
+
+        <script>
+            // Your existing filter logic
+            let activeFilters = new Set();
+            function toggleFilter(element) {
+                const tag = element.getAttribute('data-tag');
+                if (element.type === 'checkbox') {
+                    // Toggle active state
+                    element.checked ? activeFilters.add(tag) : activeFilters.delete(tag);
+                } else {
+                    // Toggle active state for buttons
+                    element.classList.toggle('active');
+                    // Add or remove tag from active filters
+                    if (activeFilters.has(tag)) {
+                        activeFilters.delete(tag);
+                    } else {
+                        activeFilters.add(tag);
+                    }
+                }
+                // Apply the filter logic
+                filterCards();
+            }
+            function filterCards() {
+                const cards = document.querySelectorAll('.grid-item');
+                if (activeFilters.size === 0) {
+                    cards.forEach(card => card.style.display = 'block');
+                } else {
+                    cards.forEach(card => {
+                        const tags = card.getAttribute('data-tags').split(' ');
+                        const matches = [...activeFilters].some(filterTag => tags.includes(filterTag));
+                        card.style.display = matches ? 'block' : 'none';
+                    });
+                }
+            }
+
+            function normalizeTag(tag) {
+    return tag.trim().toLowerCase().replace(/[\s-]+/g, ''); // Normalize: lowercase, no spaces or hyphens
+}
+
+function filterCards() {
+    const cards = document.querySelectorAll('.grid-item');
+
+    if (activeFilters.size === 0) {
+        cards.forEach(card => card.style.display = 'block');
+    } else {
+        cards.forEach(card => {
+            const tags = card.getAttribute('data-tags')
+                .split(' ')
+                .map(normalizeTag); // Normalize tags from the card
+            
+            const matches = [...activeFilters].some(filterTag =>
+                tags.includes(normalizeTag(filterTag)) // Compare normalized tags
+            );
+
+            card.style.display = matches ? 'block' : 'none';
+        });
+    }
+}
+
+            function deselectAllFilters() {
+                activeFilters.clear();
+                document.querySelectorAll('.filter-checkbox input').forEach(input => input.checked = false);
+                document.querySelectorAll('.filter-btn').forEach(button => button.classList.remove('active'));
+                filterCards();
+            }
+            // New filter setup with dynamic generation
+
+
+            const filterGrid = document.getElementById('filterGrid');
+            filters.forEach(filter => {
+                const filterCheckbox = document.createElement('div');
+                filterCheckbox.classList.add('filter-checkbox');
+                filterCheckbox.innerHTML = `
+                    <label for="$${filter.id}">
+                        <input type="checkbox" id="$${filter.id}" name="$${filter.label}" data-tag="$${filter.id}" onclick="toggleFilter(this)">
+                        <span>$${filter.label}</span>
+                    </label>
+                `;
+                filterGrid.appendChild(filterCheckbox);
+            });
+        </script>
+
+        <script>
+            var myIndex = 0;
+            carousel();
+            function carousel() {
+                var i;
+                var x = document.getElementsByClassName("mySlides");
+                for (i = 0; i < x.length; i++) {
+                    x[i].style.display = "none";
+                }
+                myIndex++;
+                if (myIndex > x.length) { myIndex = 1 }
+                x[myIndex - 1].style.display = "block";
+                setTimeout(carousel, 10000); // Change image every 2 seconds
+            }
+        </script>
+
+        <script>
+            const lectures = [
+                // "00-00-attendance-deck.html",
+                // "00-01-organization-deck.html",
+                // "00-02-exam-information-deck.html",
+                // "01-01-about-icg-deck.html",
+                // "01-02-applications-deck.html",
+                // "01-03-approaches-deck.html",
+                // "01-03-approaches2-deck.html",
+                // "01-04-outlook-deck.html",
+                // "02-01-vision-deck.html",
+                // "02-02-color-models-biological-deck.html",
+                // "02-03-color-models-hardware-user-deck.html",
+                // "02-04-gamma-correction-deck.html",
+                // "03-01-raster-and-vector-graphics-deck.html",
+                // "03-02-raster-conversion-triangles-deck.html",
+                // "03-03-raster-conversion-lines-deck.html",
+                // "03-04-anti-aliasing-deck.html",
+                // "04-01-ray-tracing-principle-deck.html",
+                // "04-02-ray-tracing-algorithm-deck.html",
+                // "04-03-ray-tracing-intersections-deck.html",
+                // "04-04-vectors-deck.html",
+                // "05-01-light-material-interaction-deck.html",
+                // "05-02-phong-reflectance-model-deck.html",
+                // "05-03-light-propagation-add-on-deck.html",
+                // "05-04-radiance-and-brdf-deck.html",
+                // "06-01-homogeneous-representation-deck.html",
+                // "06-02-matrix-algebra-deck.html",
+                // "06-03-rigid-body-transforms-deck.html",
+                // "06-04-affine-transforms-deck.html",
+                // "06-05-vector-points-implmentation-deck.html",
+                // "07-01-composite-transforms-deck.html",
+                // "07-02-scene-graphs-principles-deck.html",
+                // "07-03-scene-graphs-examples-deck.html",
+                // "07-04-scene-graphs-implementation-deck.html",
+                // "08-01-rasterization-principle-and-geometry-deck.html",
+                // "08-02-rasterization-pipeline-deck.html",
+                // "08-03-shader-programming-deck.html",
+                // "09-01-viewing-and-projection-deck.html",
+                // "09-02-parallel-projection-deck.html",
+                // "09-03-perspective-projection-deck.html",
+                // "09-04-stereoscopic-3d-imaging-deck.html",
+                // "10-01-animation-intro-deck.html",
+                // "10-02-euler-rotations-deck.html",
+                // "10-03-quaternions-deck.html",
+                // "10-04-interpolating-rotations-deck.html",
+                // "11-01-texturing-principle-deck.html",
+                // "11-02-texturing-pipeline-deck.html",
+                // "11-03-texture-filtering-deck.html",
+                // "11-04-texture-add-ons-deck.html",
+                // "12-01-skeletal-animation-deck.html",
+                // "12-02-skinning-deck.html",
+                // "12-03-face-animation-deck.html"
+            ];
+            const cardGrid = document.querySelector('.card-grid');
+            function formatTitle(filename) {
+                const parts = filename.replace('.html', '').split('-').slice(2, -1);
+                return parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+            }
+            async function fetchPageInfo(url) {
+                try {
+                    const response = await fetch(url);
+                    const text = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(text, 'text/html');
+                    const author = doc.querySelector('meta[name="author"]').getAttribute('content');
+                    const title = doc.querySelector('title').innerText.split(':')[0].trim();
+                    const teaserImg = doc.querySelector('.teaser-img img').getAttribute('src');
+                    return { author, title, teaserImg };
+                } catch (error) {
+                    console.error('Error fetching page info:', error);
+                    return { author: 'Unknown', title: 'Unknown', teaserImg: 'preview-image.webp' };
+                }
+            }
+            let currentClass = '';
+            lectures.forEach(lecture => {
+                const classNumber = lecture.split('-')[0].replace(/^0+/, '');
+                if (currentClass !== classNumber) {
+                    currentClass = classNumber;
+                    const classHeader = document.createElement('div');
+                    classHeader.classList.add('section-header', 'block');
+                    classHeader.setAttribute('data-tags', `category${classNumber}`);
+                    classHeader.innerText = `Class ${classNumber}`;
+                    cardGrid.appendChild(classHeader);
+                }
+                const gridItem = document.createElement('div');
+                gridItem.classList.add('grid-item');
+                gridItem.setAttribute('data-tags', `category${classNumber}`);
+                const card = document.createElement('div');
+                card.classList.add('card');
+                const front = document.createElement('div');
+                front.classList.add('front', 'block');
+                const back = document.createElement('div');
+                back.classList.add('back', 'block');
+                const handoutLink = lecture.replace('-deck', '-handout');
+                // Initially set content with placeholders
+                front.innerHTML = `
+    <img src="preview-image.webp" alt="Preview Image">
+    <h2>Loading...</h2>
+    <div class="card-content">
+        <p>Description for ${lecture}</p>
     </div>
-  </div>
+`;
+                back.innerHTML = `
+    <div class="card-content">
+        <h2>Loading...</h2>
+        <p>Details for ${lecture}</p>
+    </div>
+    <div class="icons">
+        <a href="http://localhost:8888/${lecture}"><img src="/support/vendor/images/theme/presentation-icon.svg" alt="Presentation"></a>
+        <a href="http://localhost:8888/${handoutLink}" download><img src="/support/vendor/images/theme/handout-icon.svg" alt="Handout"></a>
+    </div>
+    <p class="author-info">Date, Author</p>
+`;
+                // Append elements to the card and grid item
+                card.appendChild(front);
+                card.appendChild(back);
+                gridItem.appendChild(card);
+                cardGrid.appendChild(gridItem);
+                // Fetch page info and update content
+                fetchPageInfo(`http://localhost:8888/${lecture}`).then(info => {
+                    front.querySelector('img').src = info.teaserImg;
+                    front.querySelector('h2').innerText = info.title;
+                    back.querySelector('h2').innerText = info.title;
+                    back.querySelector('.author-info').innerText = `Date, ${info.author}`;
+                });
+            });
+        </script>
+        <!-- Handling the page-hero navigaton bar -->
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                createMenu();
+                loadFiltersFromURL();
+            });
+            function createMenu() {
+                const menu = window.menu || [];
+                const menuContainer = document.createElement('ul');
+                menu.forEach(item => {
+                    const menuItem = document.createElement('li');
+                    const menuLink = document.createElement('a');
+                    menuLink.href = item.href;
+                    menuLink.innerText = item.title;
+                    menuLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (item.title.toLowerCase() === 'home') {
+                            applyFilters('home');
+                        }
+                    });
+                    menuItem.appendChild(menuLink);
+                    if (item.items) {
+                        const subMenu = document.createElement('ul');
+                        item.items.forEach(subItem => {
+                            const subMenuItem = document.createElement('li');
+                            const subMenuLink = document.createElement('a');
+                            subMenuLink.href = subItem.href;
+                            subMenuLink.innerText = subItem.title;
+                            subMenuLink.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                applyFilters(item.title.toLowerCase(), subItem.week);
+                            });
+                            subMenuItem.appendChild(subMenuLink);
+                            subMenu.appendChild(subMenuItem);
+                        });
+                        menuItem.appendChild(subMenu);
+                    }
+                    menuContainer.appendChild(menuItem);
+                });
+                document.querySelector('.page-hero').appendChild(menuContainer);
+            }
+            function applyFilters(type, week) {
+                let url = new URL(window.location.href);
+                url.searchParams.set('type', type);
+                if (week !== undefined) {
+                    url.searchParams.set('week', week);
+                } else {
+                    url.searchParams.delete('week');
+                }
+                window.history.pushState({}, '', url);
+                loadFiltersFromURL();
+            }
+            function loadFiltersFromURL() {
+                let url = new URL(window.location.href);
+                let type = url.searchParams.get('type');
+                let week = url.searchParams.get('week');
+                // Clear current filters
+                deselectAllFilters();
+                // Apply new filters based on URL parameters
+                if (type) {
+                    document.querySelectorAll(`.filter-checkbox input[data-tag="${type}"]`).forEach(input => {
+                        input.checked = true;
+                        activeFilters.add(type);
+                    });
+                }
+                if (week) {
+                    document.querySelectorAll(`.filter-checkbox input[data-tag="week-${week}"]`).forEach(input => {
+                        input.checked = true;
+                        activeFilters.add(`week-${week}`);
+                    });
+                }
+                filterCards();
+            }
+            function deselectAllFilters() {
+                activeFilters.clear();
+                document.querySelectorAll('.filter-checkbox input').forEach(input => input.checked = false);
+                document.querySelectorAll('.filter-btn').forEach(button => button.classList.remove('active'));
+                filterCards();
+            }
+        </script>
+        <!-- <script type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script> -->
+        <!-- <script src="/support/js/bundle.js"></script> -->
+    </div>
 
-  <div class="grid-container" id="tileContainer">
 
-  </div>
+    <script>
+        console.log("Hello from index.html");
+    </script>
+    <script src="$decker-support-dir$/js/index-bootstap-inject.js"></script>
+    <script>
+        console.log("Hello from index.html");
+    </script>
 
-  <!-- TODO: some of them are no longer required  -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- TODO: some of them are no longer required  -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
 
-  <script src="$decker-support-dir$/js/mustache.min.js"></script>
-  <script src="$decker-support-dir$/js/index-bootstap-inject.js"></script>
+    <script src="$decker-support-dir$/js/mustache.min.js"></script>
+
 
 </body>
 <footer>
-  $for(author)$
-  <p class="author">$author$</p>
-  $endfor$
-  $if(date)$
-  <p class="date">$date$</p>
-  $endif$
+    $for(author)$
+    <p class="author">$author$</p>
+    $endfor$
+    $if(date)$
+    <p class="date">$date$</p>
+    $endif$
 </footer>
 
 </html>

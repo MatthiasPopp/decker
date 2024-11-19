@@ -36,25 +36,63 @@ async function extractPresentations() {
                 continue; // Skip this iteration if filename is null
             }
             const filenameParts = filename.split('-');
-            const chapter = filenameParts[0];
-            const section = /^[0-9]{2}$/.test(filenameParts[1]) ? filenameParts[1] : '';
+            //the chapter, section, subsection and subsubsection are meta data in the header of the presentation
+            const chapter = presentationDoc.querySelector('meta[name="chapter"]')?.getAttribute('content') || '';
+            const section = presentationDoc.querySelector('meta[name="section"]')?.getAttribute('content') || '';
+            const subsection = presentationDoc.querySelector('meta[name="subsection"]')?.getAttribute('content') || '';
+            const subsubsection = presentationDoc.querySelector('meta[name="subsubsection"]')?.getAttribute('content') || '';
+
             const titleElement = presentationDoc.querySelector('.title') || presentationDoc.querySelector('title');
             const subtitleElement = presentationDoc.querySelector('.subtitle');
             const dateElement = presentationDoc.querySelector('.date');
             const authorElement = presentationDoc.querySelector('.author');
-            const teaserImageElement = presentationDoc.querySelector('.teaser-img img');
+            const teaserImageElement = presentationDoc.querySelector('meta[name="teaser-image"]');
             const affiliationLogoElement = presentationDoc.querySelector('.affiliation-logo img');
             const affiliationElement = presentationDoc.querySelector('.affiliation');
             const keywordsElement = presentationDoc.querySelector('meta[name="keywords"]');
             const keywords = keywordsElement ? keywordsElement.getAttribute('content')?.split(', ') : [];
+            const visibilityElement = presentationDoc.querySelector('meta[name="visible"]');
+            const descriptionElement = presentationDoc.querySelector('meta[name="description"]');
+
+            //             $if(index.supplimentals)$
+            //   $for(index.supplimentals)$
+            //     <meta name="supplimental" content="title: $index.supplimentals.title$, link: $index.supplimentals.link$, icon: $index.supplimentals.icon$">
+            //   $endfor$
+            // $endif$
+            const supplimentals = presentationDoc.querySelectorAll('meta[name="supplimental"]');
+            //           parse the content of the meta tag, split it by comma and then by colon
+            const supplimentalsArray = Array.from(supplimentals).map(supplimental => {
+                const content = supplimental.getAttribute('content') || '';
+                const parts = content.split(',').map(part => part.split(': ').map(part => part.trim()));
+                return parts.reduce((acc, [key, value]) => {
+                    acc[key] = value;
+                    return acc;
+                }, {});
+            });
+            console.log(supplimentalsArray);
+
+
+
+
+
+            // Check if the presentation is a handout. If it is, this is a supplemental presentation. Instead of adding it to the presentations array, add it to the supplemental array of the corresponding presentation.
+
             if (presentationURL.endsWith('-handout.html')) {
                 const deckPresentationURL = presentationURL.replace('-handout.html', '-deck.html');
                 const correspondingSection = presentations.find(section => section.sectionTitle === sectionTitle);
                 if (correspondingSection) {
                     const correspondingPresentation = correspondingSection.sectionPresentations.find(presentation => presentation.url === deckPresentationURL);
                     if (correspondingPresentation) {
-                        correspondingPresentation.handout = presentationURL;
+                        correspondingPresentation.supplemental.push({
+                            title: presentationTitle,
+                            url: presentationURL,
+                            affiliationLogo: affiliationLogoElement ? affiliationLogoElement.getAttribute('src') || '' : '',
+                            subtitle: subtitleElement ? subtitleElement.textContent?.trim() || '' : '',
+                            date: dateElement ? dateElement.textContent?.trim() || '' : '',
+                        });
                     }
+                    else
+                        console.error(`Deck presentation not found for handout: ${presentationURL}`);
                 }
                 continue;
             }
@@ -63,15 +101,31 @@ async function extractPresentations() {
                 subtitle: subtitleElement ? subtitleElement.textContent?.trim() || '' : '',
                 date: dateElement ? dateElement.textContent?.trim() || '' : '',
                 author: authorElement ? authorElement.textContent?.trim() || '' : '',
-                teaserImage: teaserImageElement ? teaserImageElement.getAttribute('src') || '' : '',
+                teaserImage: teaserImageElement ? teaserImageElement.getAttribute('content') || '' : '',
                 affiliationLogo: affiliationLogoElement ? affiliationLogoElement.getAttribute('src') || '' : '',
                 affiliation: affiliationElement ? affiliationElement.textContent?.trim() || '' : '',
                 chapter: chapter,
                 section: section,
+                subsection: subsection,
+                subsubsection: subsubsection,
                 keywords: keywords || [],
                 url: presentationURL,
                 supplemental: [],
+                description: descriptionElement ? descriptionElement.getAttribute('content') || '' : '',
+                visibility: visibilityElement ? visibilityElement.getAttribute('content') || false : false,
             };
+
+            // if there are supplimentals, add them to the presentationInfo
+            for (const supplimental of supplimentalsArray) {
+                presentationInfo.supplemental.push({
+                    title: supplimental.title,
+                    url: supplimental.link,
+                    affiliationLogo: supplimental.icon,
+                    subtitle: "",
+                    date: "",
+                });
+            }
+
             const titleParts = filenameParts.slice(section ? 2 : 1);
             const presentationTitleWithoutOrdinal = titleParts.map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
             if (keywords && keywords.includes('supplemental')) {
@@ -126,11 +180,19 @@ async function extractPresentations() {
             sectionTitle: sectionTitle,
             sectionPresentations: presentationsInSection,
         });
+
+        //debug
+        console.log('sectionTitle:', sectionTitle);
+        console.log('presentationsInSection:', presentations
+            .find(section => section.sectionTitle === sectionTitle)?.sectionPresentations);
+
+
     }
     removeExcludedDirectories('', presentations);
     removeEmptySections(presentations);
     return presentations;
 }
+
 // Deprecated
 function createChapterFilterButtons() {
     const chapterTitles = document.querySelectorAll('.chapter-title');
@@ -211,6 +273,139 @@ function removeEmptySections(presentations) {
         }
     }
 }
+
+function formatTitle(filename) {
+    const parts = filename.replace('.html', '').split('-').slice(2, -1);
+    return parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+}
+async function fetchPageInfo(url) {
+    try {
+        const response = await fetch(url);
+        const text = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+        const author = doc.querySelector('meta[name="author"]').getAttribute('content');
+        const title = doc.querySelector('title').innerText.split(':')[0].trim();
+        const teaserImg = doc.querySelector('.teaser-img img').getAttribute('src');
+        return { author, title, teaserImg };
+    } catch (error) {
+        console.error('Error fetching page info:', error);
+        return { author: 'Unknown', title: 'Unknown', teaserImg: 'preview-image.webp' };
+    }
+}
+
+
+async function populateTiles2() {
+    const presentations = await extractPresentations();
+    const cardGrid = document.querySelector('.card-grid');
+    if (!cardGrid) {
+        return;
+    }
+    const sectionTemplate = `
+        <div class="section-header block" data-tags="category{{classNumber}}">
+            Class {{classNumber}}
+        </div>
+    `;
+
+    // Iterate over all presentations and create a card for each
+
+    for (const section of presentations) {
+        for (const presentationInfo of section.sectionPresentations) {
+
+            const gridItem = document.createElement('div');
+            gridItem.classList.add('grid-item');
+            // gridItem.setAttribute('data-tags', `category${classNumber}`);
+            const card = document.createElement('div');
+            card.classList.add('card');
+            const front = document.createElement('div');
+            front.classList.add('front', 'block');
+            const back = document.createElement('div');
+            back.classList.add('back', 'block');
+            // const handoutLink = lecture.replace('-deck', '-handout');
+            // Initially set content with placeholders
+            front.innerHTML = `
+            <img src="${presentationInfo.teaserImage || 'preview-image.webp'}" alt="Preview Image">
+            <h2>${presentationInfo.title || 'Loading...'}</h2>
+            <div class="card-content">
+                <p>${presentationInfo.description || ''}</p>
+            </div>
+            `;
+
+
+
+
+            back.innerHTML = `
+            <div class="card-content">
+                <h2>${presentationInfo.title || 'Loading...'}</h2>
+                <p>${presentationInfo.description || ''}</p>
+            </div>
+            <div class="icons">
+                <a href="${presentationInfo.url || '#'}"><img src="/support/vendor/images/theme/presentation-icon.svg" alt="Presentation"></a>
+            </div>
+            <p class="author-info">${presentationInfo.date || 'Date'}, ${presentationInfo.author || 'Author'}</p>
+            `;
+
+            // There might be more than one supplemental. These are given in the supplimentals array  - we need to iterate over them and add them to the icons object on the back of the card
+
+            if (presentationInfo.supplemental.length > 0) {
+                for (const supplemental of presentationInfo.supplemental) {
+                    //create an attribute for the supplemental link, including the url, icon as image source 
+                    const supplementalLink = document.createElement('a');
+                    supplementalLink.href = supplemental.url;
+                    supplementalLink.target = '_blank';
+                    const supplementalIcon = document.createElement('img');
+                    supplementalIcon.src = supplemental.affiliationLog || 'https://img.icons8.com/?size=50&id=y7PxIZBtQmoP&format=png';
+                    supplementalIcon.classList.add('supplemental-icon');
+                    // const supplementalText = document.createElement('span');
+                    // supplementalText.classList.add('supplemental-text');
+                    // supplementalText.innerText = supplemental.title;
+                    supplementalLink.appendChild(supplementalIcon);
+                    //supplementalLink.appendChild(supplementalText);
+                    back.querySelector('.icons').appendChild(supplementalLink);
+                }
+
+                // Append elements to the card and grid item
+                card.appendChild(front);
+                card.appendChild(back);
+                gridItem.appendChild(card);
+                cardGrid.appendChild(gridItem);
+
+                front.querySelector('img').src = presentationInfo.teaserImage;
+                front.querySelector('h2').innerText = presentationInfo.title;
+
+                back.querySelector('h2').innerText = presentationInfo.title;
+                // back.querySelector('.author-info').innerText = `Date, ${presentationInfo.author}`;
+
+                // add keyword tags to the front of the card as badges 
+                if (presentationInfo.keywords.length > 0) {
+                    const keywordContainer = document.createElement('div');
+                    keywordContainer.style.display = 'flex';
+                    keywordContainer.style.alignItems = 'flex-start';
+                    keywordContainer.style.flexWrap = 'wrap';
+
+                    keywordContainer.classList.add('keyword-container');
+                    for (const keyword of presentationInfo.keywords) {
+                        const keywordBadge = document.createElement('span');
+                        keywordBadge.classList.add('badge', 'badge-pill', 'badge-secondary', 'keyword');
+                        keywordBadge.innerText = keyword;
+                        keywordContainer.appendChild(keywordBadge);
+                    }
+                    front.appendChild(keywordContainer);
+                }
+
+                //add the keywords as filter tags to the grid item
+                gridItem.setAttribute('data-tags', presentationInfo.keywords.join(' '));
+
+
+            }
+        }
+        ;
+
+    }
+}
+
+
+
 async function populateTiles() {
     const tileContainer = document.getElementById('tileContainer');
     if (!tileContainer) {
@@ -370,11 +565,15 @@ function addFilters() {
     });
 }
 async function main() {
-    populateTiles();
+    populateTiles2();
     createChapterFilterButtons();
     createTagFilterButtons();
     addFilters();
     removeDefaultLayout();
 }
-// Run the main function when the DOM is ready
-document.addEventListener('DOMContentLoaded', main);
+// Run the main function when the DOM is ready or immediately if it is already ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', main);
+} else {
+    main();
+}

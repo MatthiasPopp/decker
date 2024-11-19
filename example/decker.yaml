@@ -1,2 +1,21 @@
 # A minimal Decker meta data file
 author: The example generator
+
+
+resource-pack: ../resource/nwburg
+template:
+  favicon: ./favicon.ico
+  index-page:
+    banner: /support/vendor/images/theme/uni-wuerzburg-header-background.png
+    carousel:
+      - /support/vendor/images/theme/uni-wuerzburg-header-background.png
+      - /support/vendor/images/theme/uni-wuerzburg-header-background.png
+    default-visibility: true
+    filters:
+      - {id: 'orga', label: 'Organisation'}
+      - {id: 'raytracing', label: 'Raytracing'}
+      - {id: 'rendering', label: 'Rendering'}
+      - {id: 'simulation', label: 'Simulation'}
+  deck:
+    js:
+      - ../template/01.js

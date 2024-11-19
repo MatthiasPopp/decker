@@ -11,7 +11,6 @@ where
 
 import Control.Lens ((^.))
 import Control.Monad.State
-import Control.Monad.IO.Class (liftIO)
 import Data.List (sort)
 import qualified Data.Map.Strict as Map
 import qualified Data.MultiMap as MM
@@ -24,9 +23,6 @@ import Text.Decker.Internal.Common
 import Text.Decker.Project.Project
 import Text.Pandoc hiding (getTemplate, lookupMeta)
 import Text.Printf
-import qualified Data.ByteString.Lazy()
-
-
 
 -- | Generates an index.md file with links to all generated files of interest.
 writeIndexLists :: Meta -> Targets -> FilePath -> Action ()
@@ -41,14 +37,13 @@ writeIndexLists meta targets out = do
   pagesLinks <- makeGroupedLinks publicDir pages'
   questLinks <- makeGroupedLinks privateDir questions'
   cwd <- liftIO Dir.getCurrentDirectory
-  let indexContent =
-        [i|
+  liftIO $
+    writeFile
+      out
+      [i|
 ---
 title: Generated Index
 subtitle: #{cwd}
-pandoc:
-  filters:
-    before:
 ---
 ``` {.javascript .run}
 import("./" + Decker.meta.supportPath + "/fuzzySearch/search.js")
@@ -76,19 +71,6 @@ import("./" + Decker.meta.supportPath + "/fuzzySearch/search.js")
 \# Questions
 #{unlines questLinks}
         |]
-
-
-  -- write the index file to debug the output
-  liftIO $ do
-    putStrLn "Writing index file to /Users/matthias/indexContent.md"
-    writeFile out indexContent
-
-
-  -- return the index file regularly
-  liftIO $
-    writeFile
-      out
-      indexContent
   where
     makeLink baseDir (html, pdf) = do
       pdfExists <- liftIO $ Dir.doesFileExist pdf
@@ -113,10 +95,6 @@ import("./" + Decker.meta.supportPath + "/fuzzySearch/search.js")
           renderGroup key =
             (printf "\n## %s:" key :) <$> mapM (makeLink baseDir) (MM.lookup key grouped)
        in concat <$> mapM renderGroup (MM.keys grouped)
-
-
-
-
 
 -- | Write Pandoc in native format right next to the output file
 writeNativeWhileDebugging :: FilePath -> String -> Pandoc -> Action ()

@@ -9,9 +9,14 @@ function Pandoc(doc)
     local title = pandoc.utils.stringify(doc.meta.title or "Untitled")
     local safe_title = get_safe_filename(title)
     local date = os.date("%Y-%m-%d_%H-%M-%S")
-    local debug_file_path = safe_title .. "_" .. date .. ".md_"
+    local debug_file_path = date .. "_" .. safe_title .. ".md"
+
+
+    -- delete file if it exists
+    os.remove(debug_file_path)
 
     local file = io.open(debug_file_path, "w")
+
 
     -- Write Metadata
     file:write("# Metadata\n\n")
@@ -28,7 +33,7 @@ function Pandoc(doc)
     -- write doc ast
     file:write("\n# AST\n\n")
     file:write(pandoc.utils.stringify(doc) .. "\n")
-    
+
 
     -- -- Write Variables (from PANDOC_STATE)
     -- file:write("\n# Variables\n\n")

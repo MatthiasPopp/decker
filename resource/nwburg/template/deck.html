@@ -10,8 +10,8 @@ $endfor$
 $if(date-meta)$
   <meta name="dcterms.date" content="$date-meta$">
 $endif$
-$if(keywords)$
-  <meta name="keywords" content="$for(keywords)$$keywords$$sep$, $endfor$">
+$if(index.keywords)$
+  <meta name="keywords" content="$for(index.keywords)$$index.keywords$$sep$, $endfor$">
 $endif$
 $if(title)$
 $if(subtitle)$
@@ -19,6 +19,63 @@ $if(subtitle)$
 $else$
   <title>$title$</title>
 $endif$
+
+<!-- Start of Index Information -->
+$if(index.chapter)$
+<meta name="chapter" content="$index.chapter$" />
+$endif$
+$if(index.section)$
+<meta name="section" content="$index.section$" />
+$endif$
+$if(index.subsection)$
+<meta name="subsection" content="$index.subsection$" />
+$endif$
+$if(index.subsubsection)$
+<meta name="subsubsection" content="$index.subsubsection$" />
+$endif$
+$if(index.description)$
+  <meta name="description" content="$index.description$" />
+$endif$
+$if(template.teaser-image)$
+  <meta name="teaser-image" content="$template.teaser-image$">
+$else$
+  $if(template.title-page.teaser-img)$
+    <meta name="teaser-image" content="$template.title-page.teaser-img$">
+  $else$
+    <meta name="teaser-image" content="https://hci.uni-wuerzburg.de/assets/images/640/general/hci-logo-red.png">
+  $endif$
+$endif$
+$if(index.visibility)$
+  <meta name="visible" content="$index.visibility$">
+$else$
+  $if(index.default-visibility)$
+    <meta name="visible" content="$index.default-visibility$">
+  $else$
+    <meta name="visible" content="true">
+  $endif$
+$endif$
+
+<!-- index:
+  visible: true
+  chapter: 1
+  section: 1
+  description: About the course
+  keywords: 
+    - Introduction
+  supplimentals: 
+    - title: "Interactive Computer Graphics"
+      link: "https://www.cs.jmu.edu/interactive-computer-graphics/"
+      icon: "fas fa-external-link-alt" -->
+<!-- check if there are supplimentals and add them also as meta information -->
+
+$if(index.supplimentals)$
+  $for(index.supplimentals)$
+    <meta name="supplimental" content="title: $index.supplimentals.title$, link: $index.supplimentals.link$, icon: $index.supplimentals.icon$">
+  $endfor$
+$endif$
+
+<!-- End of Index Information -->
+
 $endif$
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
