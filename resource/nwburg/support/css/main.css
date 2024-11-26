@@ -199,10 +199,23 @@ figure>figcaption {
   margin-bottom:15px;
   position:relative;
   display:block;
-  height:75px
+  /* height:75px */
 }
+
+.page-body {
+  width:90%;
+  margin:0 auto;
+  margin-top:15px;
+  margin-bottom:15px;
+  position:relative;
+  display:block;
+}
+
 @media(min-width: 740px) {
   .page-header {
+    width:720px
+  }
+  .page-body {
     width:720px
   }
 }
@@ -210,13 +223,20 @@ figure>figcaption {
   .page-header {
     width:960px
   }
+  .page-body {
+    width:960px
+  }
 }
 @media(min-width: 1180px) {
   .page-header {
     width:1140px
   }
+  .page-body {
+    width:1140px
+  }
 }
 .page-header .page-header__logo {
+  display: flex;
   background:#d1d4d4;
   height:100%;
   position:relative;
@@ -719,33 +739,35 @@ figure>figcaption {
 .page-footer .page-footer-bottom * {
   color:inherit
 }
-.block {
+
+
+.card .block {
   border-top:2px solid #004a8f;
   background:#fff;
   padding:10px;
   display:flex;
   flex-direction:column
 }
-.block .image {
+.card  .block .image {
   margin-bottom:5px
 }
-.block>.title {
+.card  .block>.title {
   color:#004a8f;
   font-weight:700;
   margin-bottom:5px
 }
-.block>.author {
+.card .block>.author {
   margin-bottom:5px
 }
-.block>.text {
+.card  .block>.text {
   margin-bottom:5px;
   flex-grow:1
 }
-.block>.footer {
+.card .block>.footer {
   display:flex;
   justify-content:space-between
 }
-.block>.footer>.text {
+.card  .block>.footer>.text {
   color:rgba(0,0,0,.38)
 }
 table {
@@ -1023,7 +1045,7 @@ table tr:nth-child(even) {
 .slick-loading .slick-list {
   background:#fff url("./ajax-loader.gif") center center no-repeat
 }
-@font-face {
+/* @font-face {
   font-family:"slick";
   src:url("./fonts/slick.eot");
   src:url("./fonts/slick.eot?#iefix") format("embedded-opentype"),
@@ -1032,7 +1054,7 @@ table tr:nth-child(even) {
   url("./fonts/slick.svg#slick") format("svg");
   font-weight:normal;
   font-style:normal
-}
+} */
 .slick-prev,
 .slick-next {
   position:absolute;

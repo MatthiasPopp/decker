@@ -20,6 +20,33 @@ $else$
   <title>$title$</title>
 $endif$
 
+<!-- add the meta-json from pandoc as meta info to access the compile time data with the js below. The meta json does contain quote symbols and it needs to be escaped -->
+
+<!-- $if(meta-json)$
+  <script type="application/json" id="pandoc-meta">
+    $meta-json$
+$endif$ -->
+
+
+
+<link rel="apple-touch-icon" sizes="57x57" href="$decker-support-dir$/support/vendor/images/favicon/apple-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="$decker-support-dir$/support/vendor/images/favicon/apple-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="$decker-support-dir$/support/vendor/images/favicon/apple-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="$decker-support-dir$/support/vendor/images/favicon/apple-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="$decker-support-dir$/support/vendor/images/favicon/apple-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="$decker-support-dir$/support/vendor/images/favicon/apple-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="$decker-support-dir$/support/vendor/images/favicon/apple-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="$decker-support-dir$/support/vendor/images/favicon/apple-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="$decker-support-dir$/support/vendor/images/favicon/apple-icon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192"  href="$decker-support-dir$/support/vendor/images/favicon/android-icon-192x192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="$decker-support-dir$/support/vendor/images/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="$decker-support-dir$/support/vendor/images/favicon/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="$decker-support-dir$/support/vendor/images/favicon/favicon-16x16.png">
+<link rel="manifest" href="$decker-support-dir$/support/vendor/images/favicon/manifest.json">
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="msapplication-TileImage" content="$decker-support-dir$/support/vendor/images/favicon//ms-icon-144x144.png">
+<meta name="theme-color" content="#ffffff">
+
 <!-- Start of Index Information -->
 $if(index.chapter)$
 <meta name="chapter" content="$index.chapter$" />
@@ -45,28 +72,18 @@ $else$
     <meta name="teaser-image" content="https://hci.uni-wuerzburg.de/assets/images/640/general/hci-logo-red.png">
   $endif$
 $endif$
-$if(index.visibility)$
-  <meta name="visible" content="$index.visibility$">
+$if(index.visible)$
+  <meta name="visible" content="$index.visible$">
+  <!-- index visibility was set to true -->
 $else$
-  $if(index.default-visibility)$
-    <meta name="visible" content="$index.default-visibility$">
+  $if(template.index-page.default-visibility)$
+    <meta name="visible" content="$template.index-page.default-visibility$">
+    <!-- default visibility was set to true -->
   $else$
-    <meta name="visible" content="true">
+    <meta name="visible" content="false">
+    <!-- no visibility specified or explicitly set to false -->
   $endif$
 $endif$
-
-<!-- index:
-  visible: true
-  chapter: 1
-  section: 1
-  description: About the course
-  keywords: 
-    - Introduction
-  supplimentals: 
-    - title: "Interactive Computer Graphics"
-      link: "https://www.cs.jmu.edu/interactive-computer-graphics/"
-      icon: "fas fa-external-link-alt" -->
-<!-- check if there are supplimentals and add them also as meta information -->
 
 $if(index.supplimentals)$
   $for(index.supplimentals)$

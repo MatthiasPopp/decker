@@ -1,0 +1,94 @@
+/* General Styles for Menu */
+.menu-bar {
+    display: flex; /* Horizontal layout for desktop */
+    justify-content: space-around;
+    /* background-color: #063D79; Example color */
+    padding: 10px;
+    list-style-type: none;
+}
+
+.menu-bar ul {
+    margin: 0;
+    padding: 0;
+}
+
+.menu-bar li {
+    position: relative; /* Needed for submenu positioning */
+}
+
+.menu-bar > ul {
+    display: flex; /* Horizontal layout for top-level items */
+}
+
+.menu-bar > ul > li {
+    margin: 0 15px; /* Add spacing between menu items */
+}
+
+.menu-bar a,
+.menu-bar span {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #063D79;
+    font-family: "Roboto", sans-serif;
+}
+
+.menu-bar a:hover,
+.menu-bar span:hover {
+    background-color: #045A9A; /* Example hover color */
+    color: #063D79;
+}
+
+/* Submenu Styles */
+.menu-bar ul ul {
+    display: none; /* Hidden by default */
+    position: absolute; /* Position submenus below parent items */
+    top: 100%; /* Align below the parent menu item */
+    left: 0;
+    background-color: white; /* Matches main menu color */
+    padding: 0;
+    list-style-type: none;
+    z-index: 1000;
+}
+
+.menu-bar ul ul li {
+    width: 200px; /* Fixed width for submenu items */
+}
+
+.menu-bar ul ul a {
+    padding: 10px 15px;
+}
+
+/* Show submenu on hover for desktop */
+.menu-bar li:hover > ul {
+    display: block;
+}
+
+/* Responsive Styles for Mobile */
+@media (max-width: 768px) {
+    .menu-bar {
+        flex-direction: column; /* Stack items vertically */
+    }
+
+    .menu-bar > ul {
+        flex-direction: column; /* Stack top-level items */
+    }
+
+    .menu-bar ul ul {
+        position: static; /* Align submenus under parent items */
+        display: none; /* Hidden by default */
+    }
+
+    .menu-bar li > ul {
+        display: none; /* Default state */
+    }
+
+    .menu-bar li.open > ul {
+        display: block; /* Visible when parent is clicked */
+    }
+
+    .menu-bar a,
+    .menu-bar span {
+        padding: 10px;
+    }
+}

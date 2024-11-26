@@ -9,7 +9,15 @@ async function extractPresentations() {
         const presentationLinks = header.querySelectorAll('a');
         const presentationLinksArray = Array.from(presentationLinks);
         const presentationsInSection = [];
+
+        //debugging 
+//        console.log('sectionTitle:', sectionTitle);
+//        console.log('presentationLinksArray:', presentationLinksArray);
+
+
         for (const link of presentationLinksArray) {
+            
+
             const presentationTitle = link.textContent;
             const presentationURL = link.getAttribute('href');
             if (!presentationURL) {
@@ -69,7 +77,7 @@ async function extractPresentations() {
                     return acc;
                 }, {});
             });
-            console.log(supplimentalsArray);
+            //console.log(supplimentalsArray);
 
 
 
@@ -126,54 +134,56 @@ async function extractPresentations() {
                 });
             }
 
-            const titleParts = filenameParts.slice(section ? 2 : 1);
-            const presentationTitleWithoutOrdinal = titleParts.map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
-            if (keywords && keywords.includes('supplemental')) {
-                // Iterate over all presentationsInSection and each sectionPresentation of them 
-                // to find the corresponding presentation
-                let found = false;
-                for (const sectionPresentation of presentations) {
-                    if (found)
-                        break;
-                    for (const presentation of sectionPresentation.sectionPresentations) {
-                        if (found)
-                            break;
-                        if (presentation.chapter === chapter) {
-                            // Query the icon using <link rel="shortcut icon">
-                            const iconElement = presentationDoc.querySelector('link[rel="shortcut icon"]');
-                            // Misuse the affiliationLogo to store the icon
-                            presentationInfo.affiliationLogo = iconElement ? iconElement.getAttribute('href') || '' : '';
-                            presentation.supplemental.push(presentationInfo);
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-                if (found) {
-                    // If there is a corresponding presentation,
-                    // add the supplemental presentation (now just an icon and url)
-                    ////
-                    const correspondingPresentation = presentations.find(section => section.sectionTitle === sectionTitle)?.sectionPresentations
-                        .find(presentation => presentation.chapter === chapter);
-                    if (correspondingPresentation) {
-                        correspondingPresentation.supplemental.push({
-                            title: presentationTitleWithoutOrdinal,
-                            url: presentationURL,
-                            affiliationLogo: presentationInfo.affiliationLogo,
-                            subtitle: "",
-                            date: "",
-                            author: "",
-                            teaserImage: "",
-                            affiliation: "",
-                            chapter: "",
-                            section: "",
-                            keywords: [],
-                            supplemental: []
-                        });
-                    }
-                    ////
-                }
-            }
+            // const titleParts = filenameParts.slice(section ? 2 : 1);
+            // const presentationTitleWithoutOrdinal = titleParts.map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+            // if (keywords && keywords.includes('supplemental')) {
+            //     // Iterate over all presentationsInSection and each sectionPresentation of them 
+            //     // to find the corresponding presentation
+            //     let found = false;
+            //     for (const sectionPresentation of presentations) {
+            //         if (found)
+            //             break;
+            //         for (const presentation of sectionPresentation.sectionPresentations) {
+            //             if (found)
+            //                 break;
+            //             if (presentation.chapter === chapter) {
+            //                 // Query the icon using <link rel="shortcut icon">
+            //                 const iconElement = presentationDoc.querySelector('link[rel="shortcut icon"]');
+            //                 // Misuse the affiliationLogo to store the icon
+            //                 presentationInfo.affiliationLogo = iconElement ? iconElement.getAttribute('href') || '' : '';
+            //                 presentation.supplemental.push(presentationInfo);
+            //                 found = true;
+            //                 break;
+            //             }
+            //         }
+            //     }
+            //     if (found) {
+            //         // If there is a corresponding presentation,
+            //         // add the supplemental presentation (now just an icon and url)
+            //         ////
+            //         const correspondingPresentation = presentations.find(section => section.sectionTitle === sectionTitle)?.sectionPresentations
+            //             .find(presentation => presentation.chapter === chapter);
+            //         if (correspondingPresentation) {
+            //             correspondingPresentation.supplemental.push({
+            //                 title: presentationTitleWithoutOrdinal,
+            //                 url: presentationURL,
+            //                 affiliationLogo: presentationInfo.affiliationLogo,
+            //                 subtitle: "",
+            //                 date: "",
+            //                 author: "",
+            //                 teaserImage: "",
+            //                 affiliation: "",
+            //                 chapter: "",
+            //                 section: "",
+            //                 keywords: [],
+            //                 supplemental: []
+            //             });
+            //         }
+            //         ////
+            //     }
+            // }
+
+            
             presentationsInSection.push(presentationInfo);
         }
         presentations.push({
@@ -182,9 +192,9 @@ async function extractPresentations() {
         });
 
         //debug
-        console.log('sectionTitle:', sectionTitle);
-        console.log('presentationsInSection:', presentations
-            .find(section => section.sectionTitle === sectionTitle)?.sectionPresentations);
+        // console.log('sectionTitle:', sectionTitle);
+        // console.log('presentationsInSection:', presentations
+        //     .find(section => section.sectionTitle === sectionTitle)?.sectionPresentations);
 
 
     }
@@ -312,6 +322,10 @@ async function populateTiles2() {
     for (const section of presentations) {
         for (const presentationInfo of section.sectionPresentations) {
 
+            if (presentationInfo.visibility === false) {
+//                console.log('Skipping invisible presentation:', presentationInfo.title);
+                continue;
+            }
             const gridItem = document.createElement('div');
             gridItem.classList.add('grid-item');
             // gridItem.setAttribute('data-tags', `category${classNumber}`);
@@ -569,7 +583,7 @@ async function main() {
     createChapterFilterButtons();
     createTagFilterButtons();
     addFilters();
-    removeDefaultLayout();
+    // removeDefaultLayout();
 }
 // Run the main function when the DOM is ready or immediately if it is already ready
 if (document.readyState === 'loading') {
